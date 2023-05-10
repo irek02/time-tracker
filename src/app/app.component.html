@@ -1,11 +1,15 @@
 <div class="container">
   <div class="card mt-5">
     <div class="card-body d-flex">
-      <input class="form-control" placeholder="What are you working on?">
-      <div class="text-red">• project name</div>
-      <div><i class="bi-tag fs-3"></i></div>
-      <div>00:26:36</div>
-      <div><button class="btn btn-primary">Start</button></div>
+      <div class="col-6">
+        <input class="form-control" placeholder="What are you working on?">
+      </div>
+      <div class="text-red ms-auto col-2">• project name</div>
+      <div class="col-1"><i class="bi-tag fs-3"></i></div>
+      <div class="col-1">00:26:36 {{ lapsed }}</div>
+      <div class="col-1">
+        <button class="btn btn-primary" (click)="toggle()">Start</button>
+      </div>
     </div>
   </div>
 </div>
