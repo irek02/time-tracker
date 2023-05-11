@@ -24,14 +24,33 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     setInterval(() => {
       if (this.timer) {
-        this.timer.diff(moment());
-        const asMs = moment.duration(moment().diff(this.timer)).asMilliseconds();
-        const foo = moment.utc(asMs).format("hh:mm:ss");
-        this.lapsed = moment.utc(moment().diff(this.timer)).format("hh:mm:ss");
-        console.log(moment(this.timer).fromNow());
-        // this.lapsed = asMs.toString();
+        const duration = moment.duration(this.getNow().diff(this.timer));
+        const asSec = Math.round(duration.asSeconds());
+        const asMins = Math.round(duration.asMinutes());
+        const asHours = Math.round(duration.asHours());
+
+        const hour = asHours;
+        const min = asMins - asHours * 60;
+        const sec = asSec - asMins * 60;
+
+        const hourStr = hour < 10 ? '0' + hour : hour;
+        const minStr = min < 10 ? '0' + min : min;
+        const secStr = sec < 10 ? '0' + sec : sec;
+
+        console.log(new Date(asSec * 1000).toISOString().substring(11, 19))
+        console.log(new Date(asSec * 1000).toISOString())
+
+        this.lapsed = `${hourStr}:${minStr}:${secStr}`;
       }
-    }, 200);
+    }, 1000);
+  }
+
+  getNow() {
+
+    return moment(1683594000000);
+
+    return moment();
+
   }
 
   toggle(): void {
