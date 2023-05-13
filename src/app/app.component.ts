@@ -18,6 +18,13 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    const savedEntries = localStorage.getItem('entries');
+
+    if (savedEntries) {
+      this.entries = JSON.parse(savedEntries);
+    }
+
     setInterval(() => {
       if (this.startedTimeMs) {
         this.elapsed = this.getDuration(this.startedTimeMs, this.getNowMs());
@@ -31,12 +38,19 @@ export class AppComponent implements OnInit {
 
   }
 
+  getTimeString(dateMs: number): string {
+
+    return new Date(dateMs).toLocaleTimeString();
+
+  }
+
   toggle(): void {
 
     if (!this.startedTimeMs) {
       this.startedTimeMs = Date.now();
     } else {
       this.entries.push({ start: this.startedTimeMs, stop: this.getNowMs() });
+      localStorage.setItem('entries', JSON.stringify(this.entries));
       this.startedTimeMs = null;
     }
 
