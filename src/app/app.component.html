@@ -6,9 +6,30 @@
       </div>
       <div class="text-red ms-auto col-2">• project name</div>
       <div class="col-1"><i class="bi-tag fs-3"></i></div>
-      <div class="col-1">00:26:36 {{ lapsed }}</div>
+      <div class="col-1">00:26:36 {{ elapsed }}</div>
       <div class="col-1">
-        <button class="btn btn-primary" (click)="toggle()">Start</button>
+        <button
+          *ngIf="!startedTimeMs"
+          class="btn btn-primary"
+          (click)="toggle()">
+          Start
+        </button>
+        <button
+          *ngIf="startedTimeMs"
+          class="btn btn-danger"
+          (click)="toggle()">
+          Stop
+        </button>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div *ngFor="let entry of entries">
+      <div>
+        {{ entry.start }} - {{ entry.stop }}
+      </div>
+      <div>
+        {{ getDuration(entry.start, entry.stop) }}
       </div>
     </div>
   </div>
