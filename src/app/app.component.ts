@@ -1,4 +1,18 @@
 import { Component, OnInit } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+
+interface Entry {
+  project_id: number;
+  start: number;
+  stop: number;
+  description: string;
+}
+
+interface Project {
+  id: number;
+  name: string;
+  color: string;
+}
 
 @Component({
   selector: 'app-root',
