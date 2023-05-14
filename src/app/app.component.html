@@ -1,46 +1,58 @@
 <div class="container">
   <div class="card mt-5">
-    <div class="card-body d-flex">
+    <div class="card-body d-flex align-items-center">
       <div class="col-6">
-        <input class="form-control" placeholder="What are you working on?">
+        <input
+          class="form-control"
+          placeholder="What are you working on?"
+          [(ngModel)]="description">
       </div>
       <div class="text-red ms-auto col-2">• project name</div>
       <div class="col-1"><i class="bi-tag fs-3"></i></div>
-      <div class="col-1">{{ elapsed }}</div>
+      <div class="col-1">{{ elapsed || '00:00:00' }}</div>
       <div class="col-1">
         <button
           *ngIf="!startedTimeMs"
           class="btn btn-primary"
-          (click)="toggle()">
+          (click)="startTimer()">
           Start
         </button>
         <button
           *ngIf="startedTimeMs"
           class="btn btn-danger"
-          (click)="toggle()">
+          (click)="stopTimer(description)">
           Stop
         </button>
       </div>
     </div>
   </div>
-  <div class="mt-3">
-    <div *ngFor="let entry of entries" class="d-flex justify-content-between p-2 m-2">
-      <div class="me-2">
-        description
-      </div>
-      <div class="flex-grow-1">
-        project
-      </div>
-      <div><i class="bi-tag fs-3"></i></div>
-      <div>
-        {{ getTimeString(entry.start) }} - {{ getTimeString(entry.stop) }}
-      </div>
-      <div>
-        {{ getDuration(entry.start, entry.stop) }}
-      </div>
-      <div>
-        Play
-      </div>
+  <div class="card mt-3">
+    <div class="card-body">
+      <div class="card-title">Today</div>
     </div>
+    <ul class="list-group list-group-flush">
+      <li *ngFor="let entry of entries; let i = index" class="list-group-item d-flex justify-content-between align-items-center p-2 m-1 gap-3">
+        <div style="max-width: 50%;">
+          {{ entry.description || 'N/A' }}
+        </div>
+        <div class="flex-grow-1">
+          project
+        </div>
+        <div>
+          <i class="bi-tag fs-3"></i>
+        </div>
+        <div>
+          {{ getTimeString(entry.start) }} - {{ getTimeString(entry.stop) }}
+        </div>
+        <div>
+          {{ getDuration(entry.start, entry.stop) }}
+        </div>
+        <div>
+          <button class="btn btn-secondary btn-sm" (click)="trackAgain(i)">
+            <i class="bi-play"></i>
+          </button>
+        </div>
+      </li>
+    </ul>
   </div>
 </div>

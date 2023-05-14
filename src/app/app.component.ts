@@ -11,7 +11,9 @@ export class AppComponent implements OnInit {
 
   startedTimeMs: number | null = null;
   elapsed = '';
-  entries: { start: number; stop: number }[] = [];
+  description = '';
+  entries: { start: number; stop: number; description: string; }[] = [];
+  projects: { name: string; color: string; }[] = [];
 
   constructor(
   ) {
@@ -44,15 +46,30 @@ export class AppComponent implements OnInit {
 
   }
 
-  toggle(): void {
+  startTimer(): void {
 
-    if (!this.startedTimeMs) {
-      this.startedTimeMs = Date.now();
-    } else {
-      this.entries.push({ start: this.startedTimeMs, stop: this.getNowMs() });
-      localStorage.setItem('entries', JSON.stringify(this.entries));
-      this.startedTimeMs = null;
-    }
+    this.startedTimeMs = Date.now();
+
+  }
+
+  stopTimer(description: string): void {
+
+    this.entries.push({
+      start: this.startedTimeMs || 0,
+      stop: this.getNowMs(),
+      description,
+    });
+
+    localStorage.setItem('entries', JSON.stringify(this.entries));
+
+    this.startedTimeMs = null;
+    this.elapsed = '';
+
+  }
+
+  trackAgain(id: number) {
+
+    // this.toggle()
 
   }
 
