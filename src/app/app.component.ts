@@ -35,7 +35,8 @@ export class AppComponent implements OnInit {
   projects = signal<Project[]>([]);
 
   foo(e:any){
-    console.log(e);
+    this.currentEntry().description = e;
+    // console.log(e);
   }
 
 

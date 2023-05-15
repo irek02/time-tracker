@@ -5,7 +5,8 @@
         <input
           class="form-control"
           placeholder="What are you working on?"
-          (keyup)="foo($any($event.target).value)">
+          [value]="currentEntry().description || ''"
+          (keyup)="updateCurrentEntry({ description: $any($event.target).value })">
       </div>
       <div class="ms-auto col-2">
         <div class="dropdown">
