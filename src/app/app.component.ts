@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Component, OnInit, effect, signal } from '@angular/core';
 
 interface Entry {
-  project_id: number;
+  project_id: number | null;
   start: number;
   stop: number;
   description: string;
@@ -23,29 +22,56 @@ export class AppComponent implements OnInit {
 
   title = 'time-tracker';
 
-  startedTimeMs: number | null = null;
   elapsed = '';
-  description = '';
-  entries: { start: number; stop: number; description: string; }[] = [];
-  projects: { name: string; color: string; }[] = [];
+  projectInput = '';
+
+  currentEntry = signal<Partial<Entry>>({
+    project_id: null,
+    start: 0,
+    description: '',
+  });
+
+  entries = signal<Entry[]>([]);
+  projects = signal<Project[]>([]);
+
+  foo(e:any){
+    console.log(e);
+  }
+
 
   constructor(
   ) {
-  }
-
-  ngOnInit(): void {
 
     const savedEntries = localStorage.getItem('entries');
 
     if (savedEntries) {
-      this.entries = JSON.parse(savedEntries);
+      this.entries.set(JSON.parse(savedEntries))
     }
 
+    const savedProjects = localStorage.getItem('projects');
+
+    if (savedProjects) {
+      this.projects.set(JSON.parse(savedProjects))
+    }
+
+    effect(() => localStorage.setItem('entries', JSON.stringify(this.entries())));
+    effect(() => localStorage.setItem('projects', JSON.stringify(this.projects())));
+
+    effect(() => console.log('projects', this.projects(), 'entries', this.entries()));
+    effect(() => console.log('currentEntry', this.currentEntry()));
+
+  }
+
+  ngOnInit(): void {
+
     setInterval(() => {
-      if (this.startedTimeMs) {
-        this.elapsed = this.getDuration(this.startedTimeMs, this.getNowMs());
+
+      if (this.currentEntry().start) {
+        this.elapsed = this.getDuration(this.currentEntry().start || 0, this.getNowMs());
       }
+
     }, 300);
+
   }
 
   getNowMs(): number {
@@ -62,28 +88,55 @@ export class AppComponent implements OnInit {
 
   startTimer(): void {
 
-    this.startedTimeMs = Date.now();
+    this.currentEntry.mutate(entry => entry.start = Date.now());
 
   }
 
-  stopTimer(description: string): void {
+  stopTimer(): void {
 
-    this.entries.push({
-      start: this.startedTimeMs || 0,
+    this.entries.mutate(entries => entries.push({
+      project_id: this.currentEntry().project_id || null,
+      start: this.currentEntry().start || 0,
       stop: this.getNowMs(),
-      description,
-    });
+      description: this.currentEntry().description || '',
+    }));
 
-    localStorage.setItem('entries', JSON.stringify(this.entries));
+    this.currentEntry.set({});
 
-    this.startedTimeMs = null;
     this.elapsed = '';
 
   }
 
-  trackAgain(id: number) {
+  trackAgain(entry: Entry) {
 
-    // this.toggle()
+    this.currentEntry.set({
+      project_id: entry.project_id,
+      description: entry.description,
+    });
+
+    this.startTimer();
+
+  }
+
+  createProject(name: string): void {
+
+    this.projects.mutate(projects => projects.push({
+      id: projects.length + 1,
+      name,
+      color: 'foo',
+    }));
+
+  }
+
+  getProjectById(id: number | null | undefined): Project | null {
+
+    return this.projects().find(project => project.id === id) || null;
+
+  }
+
+  updateCurrentEntry(props: Partial<Entry>) {
+
+    this.currentEntry.update(entry => ({ ...entry, ...props }));
 
   }
 

@@ -5,22 +5,44 @@
         <input
           class="form-control"
           placeholder="What are you working on?"
-          [(ngModel)]="description">
+          (keyup)="foo($any($event.target).value)">
       </div>
-      <div class="text-red ms-auto col-2">• project name</div>
+      <div class="ms-auto col-2">
+        <div class="dropdown">
+          <button class="btn btn-link" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ getProjectById(currentEntry().project_id)?.name || 'Select project' }}
+          </button>
+          <div class="dropdown-menu">
+            <input #projectInput class="form-control m-2 w-75">
+            <ul class="list-unstyled">
+              <li *ngFor="let project of projects()" class="m-3">
+                <button type="button" (click)="updateCurrentEntry({ project_id: project.id })">
+                  {{ project.name }}
+                </button>
+              </li>
+            </ul>
+            <button
+              type="button"
+              class="btn btn-link"
+              (click)="createProject(projectInput.value)">
+              Create project
+            </button>
+          </div>
+        </div>
+      </div>
       <div class="col-1"><i class="bi-tag fs-3"></i></div>
       <div class="col-1">{{ elapsed || '00:00:00' }}</div>
       <div class="col-1">
         <button
-          *ngIf="!startedTimeMs"
+          *ngIf="!currentEntry().start"
           class="btn btn-primary"
           (click)="startTimer()">
           Start
         </button>
         <button
-          *ngIf="startedTimeMs"
+          *ngIf="currentEntry().start"
           class="btn btn-danger"
-          (click)="stopTimer(description)">
+          (click)="stopTimer()">
           Stop
         </button>
       </div>
@@ -31,12 +53,12 @@
       <div class="card-title">Today</div>
     </div>
     <ul class="list-group list-group-flush">
-      <li *ngFor="let entry of entries; let i = index" class="list-group-item d-flex justify-content-between align-items-center p-2 m-1 gap-3">
+      <li *ngFor="let entry of entries().reverse(); let i = index" class="list-group-item d-flex justify-content-between align-items-center p-2 m-1 gap-3">
         <div style="max-width: 50%;">
           {{ entry.description || 'N/A' }}
         </div>
         <div class="flex-grow-1">
-          project
+          {{ getProjectById(entry.project_id)?.name || 'no project' }}
         </div>
         <div>
           <i class="bi-tag fs-3"></i>
@@ -48,7 +70,7 @@
           {{ getDuration(entry.start, entry.stop) }}
         </div>
         <div>
-          <button class="btn btn-secondary btn-sm" (click)="trackAgain(i)">
+          <button class="btn btn-secondary btn-sm" (click)="trackAgain(entry)">
             <i class="bi-play"></i>
           </button>
         </div>
