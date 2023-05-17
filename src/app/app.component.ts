@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
   title = 'time-tracker';
 
   elapsed = '';
-  projectInput = '';
+  dropdownOpen = false;
 
   currentEntry = signal<Partial<Entry>>({
     project_id: null,
@@ -34,9 +34,8 @@ export class AppComponent implements OnInit {
   entries = signal<Entry[]>([]);
   projects = signal<Project[]>([]);
 
-  foo(e:any){
-    this.currentEntry().description = e;
-    // console.log(e);
+  onEntryInputFocus(){
+    this.dropdownOpen = true;
   }
 
 
@@ -126,6 +125,17 @@ export class AppComponent implements OnInit {
       name,
       color: 'foo',
     }));
+
+  }
+
+  previousEntrySelected(entry: Entry) {
+
+    this.updateCurrentEntry({
+      project_id: entry.project_id,
+      description: entry.description,
+    });
+    this.startTimer();
+    this.dropdownOpen = false;
 
   }
 
