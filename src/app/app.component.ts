@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild, effect, signal } from '@angular/core';
 
 interface Entry {
   project_id: number | null;
@@ -34,12 +34,10 @@ export class AppComponent implements OnInit {
   entries = signal<Entry[]>([]);
   projects = signal<Project[]>([]);
 
-  onEntryInputFocus(){
-    this.dropdownOpen = true;
-  }
-
+  @ViewChild('autocompleteContainer') autocompleteContainer: ElementRef | null = null;
 
   constructor(
+    private renderer: Renderer2,
   ) {
 
     const savedEntries = localStorage.getItem('entries');
@@ -57,12 +55,28 @@ export class AppComponent implements OnInit {
     effect(() => localStorage.setItem('entries', JSON.stringify(this.entries())));
     effect(() => localStorage.setItem('projects', JSON.stringify(this.projects())));
 
-    effect(() => console.log('projects', this.projects(), 'entries', this.entries()));
+    effect(() => console.log('projects', this.projects()));
+    effect(() => console.log('entries', this.entries()));
     effect(() => console.log('currentEntry', this.currentEntry()));
 
   }
 
+  filteredEntries(term: string, entries: Entry[]) {
+
+    return entries
+      .filter(entry => !!entry.description || !!entry.project_id)
+      .filter(entry => entry.description.toLowerCase().includes(term) ||
+      this.getProjectById(entry.project_id)?.name.toLocaleLowerCase().includes(term));
+
+  }
+
   ngOnInit(): void {
+
+    this.renderer.listen('window', 'click', (e:Event) => {
+      if (!this.autocompleteContainer?.nativeElement.contains(e.target)){
+        this.dropdownOpen = false;
+      }
+    });
 
     setInterval(() => {
 
@@ -114,7 +128,9 @@ export class AppComponent implements OnInit {
       description: entry.description,
     });
 
-    this.startTimer();
+    if (!this.currentEntry().start) {
+      this.startTimer();
+    }
 
   }
 
@@ -123,19 +139,22 @@ export class AppComponent implements OnInit {
     this.projects.mutate(projects => projects.push({
       id: projects.length + 1,
       name,
-      color: 'foo',
+      color: 'red',
     }));
 
   }
 
-  previousEntrySelected(entry: Entry) {
+  previousEntrySelected(entry: Entry, el: any) {
 
     this.updateCurrentEntry({
       project_id: entry.project_id,
       description: entry.description,
     });
-    this.startTimer();
+    if (!this.currentEntry().start) {
+      this.startTimer();
+    }
     this.dropdownOpen = false;
+    el.focus();
 
   }
 

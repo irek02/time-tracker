@@ -1,25 +1,28 @@
 <div class="container">
   <div class="card mt-5">
     <div class="card-body d-flex align-items-center">
-      <div class="col-6">
+      <div class="col-6" #autocompleteContainer>
         <input
+          #autocompleteInput
           class="form-control"
           placeholder="What are you working on?"
           [value]="currentEntry().description || ''"
           (keyup)="updateCurrentEntry({ description: $any($event.target).value })"
-          (focus)="dropdownOpen = true">
-        <div *ngIf="dropdownOpen" class="card card-body position-absolute" style="z-index: 1000">
-          <ul class="list-unstyled">
-            <li *ngFor="let entry of entries()">
-              <button
-                type="button"
-                class="border-0 bg-transparent w-100 text-start p-1 m-1"
-                (click)="previousEntrySelected(entry)">
-                {{ entry.description }} • {{ getProjectById(entry.project_id)?.name || 'no project' }}
-              </button>
-            </li>
-          </ul>
-        </div>
+          (click)="dropdownOpen = true">
+        <ng-container *ngIf="filteredEntries(autocompleteInput.value, entries()) as entries">
+          <div *ngIf="dropdownOpen && entries.length > 1" class="card card-body position-absolute" style="z-index: 1000">
+            <ul class="list-unstyled">
+              <li *ngFor="let entry of entries">
+                <button
+                  type="button"
+                  class="border-0 bg-transparent w-100 text-start p-1 m-1"
+                  (click)="previousEntrySelected(entry, autocompleteInput)">
+                  {{ entry.description }} • {{ getProjectById(entry.project_id)?.name || 'no project' }}
+                </button>
+              </li>
+            </ul>
+          </div>
+        </ng-container>
       </div>
       <div class="ms-auto col-2">
         <div class="dropdown">
