@@ -10,14 +10,17 @@
           (keyup)="updateCurrentEntry({ description: $any($event.target).value })"
           (click)="dropdownOpen = true">
         <ng-container *ngIf="filteredEntries(autocompleteInput.value, entries()) as entries">
-          <div *ngIf="dropdownOpen && entries.length > 1" class="card card-body position-absolute" style="z-index: 1000">
+          <div *ngIf="dropdownOpen && entries.length > 1" class="card card-body position-absolute col-6" style="z-index: 1000">
             <ul class="list-unstyled">
               <li *ngFor="let entry of entries">
                 <button
                   type="button"
                   class="border-0 bg-transparent w-100 text-start p-1 m-1"
                   (click)="previousEntrySelected(entry, autocompleteInput)">
-                  {{ entry.description }} • {{ getProjectById(entry.project_id)?.name || 'no project' }}
+                  {{ entry.description }}
+                  <span *ngIf="getProjectById(entry.project_id) as project" [ngClass]="'color-' + project.color">
+                     • {{ project.name }}
+                    </span>
                 </button>
               </li>
             </ul>
@@ -26,15 +29,20 @@
       </div>
       <div class="ms-auto col-2">
         <div class="dropdown">
-          <button class="btn btn-link" type="button" data-bs-toggle="dropdown">
-            {{ getProjectById(currentEntry().project_id)?.name || 'Select project' }}
+          <button class="btn btn-link text-decoration-none" type="button" data-bs-toggle="dropdown">
+            <span *ngIf="getProjectById(currentEntry().project_id) as project" [ngClass]="'color-' + project.color">
+              • {{ project.name }}
+            </span>
+            <span *ngIf="!getProjectById(currentEntry().project_id)"><i class="bi-folder me-1"></i> Project</span>
           </button>
           <div class="dropdown-menu">
             <input #projectInput class="form-control m-2 w-75">
             <ul class="list-unstyled">
-              <li *ngFor="let project of projects()" class="m-3">
-                <button type="button" (click)="updateCurrentEntry({ project_id: project.id })">
-                  {{ project.name }}
+              <li *ngFor="let project of projects()" class="m-1">
+                <button type="button" class="btn btn-link text-decoration-none" (click)="updateCurrentEntry({ project_id: project.id })">
+                  <span [ngClass]="'color-' + project.color">
+                    • {{ project.name }}
+                  </span>
                 </button>
               </li>
             </ul>
@@ -42,7 +50,7 @@
               type="button"
               class="btn btn-link"
               (click)="createProject(projectInput.value)">
-              Create project
+              <i class="bi-folder-plus me-2"></i>Create project
             </button>
           </div>
         </div>
@@ -75,7 +83,9 @@
           {{ entry.description || 'N/A' }}
         </div>
         <div class="flex-grow-1">
-          {{ getProjectById(entry.project_id)?.name || 'no project' }}
+          <span *ngIf="getProjectById(entry.project_id) as project" [ngClass]="'color-' + project.color">
+            • {{ project.name }}
+          </span>
         </div>
         <div>
           <i class="bi-tag fs-3"></i>

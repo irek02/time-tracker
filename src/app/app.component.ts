@@ -33,6 +33,7 @@ export class AppComponent implements OnInit {
 
   entries = signal<Entry[]>([]);
   projects = signal<Project[]>([]);
+  colors = ['blue', 'purple', 'red', 'orange', 'green'];
 
   @ViewChild('autocompleteContainer') autocompleteContainer: ElementRef | null = null;
 
@@ -139,7 +140,7 @@ export class AppComponent implements OnInit {
     this.projects.mutate(projects => projects.push({
       id: projects.length + 1,
       name,
-      color: 'red',
+      color: this.colors[Math.floor(Math.random() * this.colors.length)],
     }));
 
   }
