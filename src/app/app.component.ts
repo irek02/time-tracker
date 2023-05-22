@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, Renderer2, ViewChild, effect, signal } from '@angular/core';
 
 interface Entry {
+  id: number;
   project_id: number | null;
   start: number;
   stop: number;
@@ -66,8 +67,14 @@ export class AppComponent implements OnInit {
 
     return entries
       .filter(entry => !!entry.description || !!entry.project_id)
-      .filter(entry => entry.description.toLowerCase().includes(term) ||
+      .filter(entry => entry.description?.toLowerCase().includes(term) ||
       this.getProjectById(entry.project_id)?.name.toLocaleLowerCase().includes(term));
+
+  }
+
+  filteredProjects(term: string, projects: Project[]) {
+
+    return projects.filter(project => project.name.includes(term));
 
   }
 
@@ -86,6 +93,12 @@ export class AppComponent implements OnInit {
       }
 
     }, 300);
+
+  }
+
+  filterProjectByName(project: Project, term: string) {
+
+    return project.name.includes(term);
 
   }
 
@@ -110,6 +123,7 @@ export class AppComponent implements OnInit {
   stopTimer(): void {
 
     this.entries.mutate(entries => entries.push({
+      id: this.entries().length + 1,
       project_id: this.currentEntry().project_id || null,
       start: this.currentEntry().start || 0,
       stop: this.getNowMs(),
@@ -169,6 +183,21 @@ export class AppComponent implements OnInit {
 
     this.currentEntry.update(entry => ({ ...entry, ...props }));
 
+  }
+
+  updateEntry(id: number, props: Partial<Entry>) {
+
+    console.log(id, props);
+
+    this.entries.mutate(entries => {
+      const index = entries.findIndex(entry => entry.id === id);
+      entries[index] = { ...entries[index], ...props };
+    });
+
+  }
+
+  foo() {
+    console.log('he');
   }
 
   getDuration(startMs: number, stopMs: number): string {
