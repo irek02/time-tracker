@@ -9,7 +9,7 @@
           [value]="currentEntry().description || ''"
           (keyup)="updateCurrentEntry({ description: $any($event.target).value })"
           (click)="dropdownOpen = true">
-        <ng-container *ngIf="filteredEntries(autocompleteInput.value, entries()) as entries">
+        <ng-container *ngIf="filteredEntries(autocompleteInput.value, entriesReversed()) as entries">
           <div *ngIf="dropdownOpen && entries.length > 1" class="card card-body position-absolute col-6" style="z-index: 1000">
             <ul class="list-unstyled">
               <li *ngFor="let entry of entries">
@@ -79,7 +79,7 @@
       <div class="card-title">Today</div>
     </div>
     <ul class="list-group list-group-flush">
-      <li *ngFor="let entry of entries().reverse(); let i = index" class="list-group-item d-flex justify-content-between align-items-center p-2 m-1 gap-3">
+      <li *ngFor="let entry of entriesReversed(); let i = index" class="list-group-item d-flex justify-content-between align-items-center p-2 m-1 gap-3">
         <div style="max-width: 50%;">
           <input
             class="form-control"

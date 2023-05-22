@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewChild, effect, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, Signal, ViewChild, computed, effect, signal } from '@angular/core';
 
 interface Entry {
   id: number;
@@ -33,6 +33,7 @@ export class AppComponent implements OnInit {
   });
 
   entries = signal<Entry[]>([]);
+  entriesReversed;
   projects = signal<Project[]>([]);
   colors = ['blue', 'purple', 'red', 'orange', 'green'];
 
@@ -53,6 +54,8 @@ export class AppComponent implements OnInit {
     if (savedProjects) {
       this.projects.set(JSON.parse(savedProjects))
     }
+
+    this.entriesReversed = computed(() => [...this.entries()].reverse());
 
     effect(() => localStorage.setItem('entries', JSON.stringify(this.entries())));
     effect(() => localStorage.setItem('projects', JSON.stringify(this.projects())));
