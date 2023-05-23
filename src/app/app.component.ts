@@ -1,4 +1,5 @@
-import { Component, ElementRef, OnInit, Renderer2, Signal, ViewChild, computed, effect, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild, computed, effect, signal } from '@angular/core';
+import { Observable, interval, map } from 'rxjs';
 
 interface Entry {
   id: number;
@@ -36,6 +37,7 @@ export class AppComponent implements OnInit {
   entriesReversed;
   projects = signal<Project[]>([]);
   colors = ['blue', 'purple', 'red', 'orange', 'green'];
+  elapsed$: Observable<string>;
 
   @ViewChild('autocompleteContainer') autocompleteContainer: ElementRef | null = null;
 
@@ -56,6 +58,15 @@ export class AppComponent implements OnInit {
     }
 
     this.entriesReversed = computed(() => [...this.entries()].reverse());
+
+    this.elapsed$ = interval(100).pipe(
+      map(() => {
+        if (this.currentEntry().start) {
+          return this.getDuration(this.currentEntry().start || 0, this.getNowMs());
+        }
+        return '';
+      }),
+    );
 
     effect(() => localStorage.setItem('entries', JSON.stringify(this.entries())));
     effect(() => localStorage.setItem('projects', JSON.stringify(this.projects())));
@@ -88,14 +99,6 @@ export class AppComponent implements OnInit {
         this.dropdownOpen = false;
       }
     });
-
-    setInterval(() => {
-
-      if (this.currentEntry().start) {
-        this.elapsed = this.getDuration(this.currentEntry().start || 0, this.getNowMs());
-      }
-
-    }, 300);
 
   }
 

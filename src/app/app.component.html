@@ -57,7 +57,7 @@
         </div>
       </div>
       <div class="col-1"><i class="bi-tag fs-3"></i></div>
-      <div class="col-1">{{ elapsed || '00:00:00' }}</div>
+      <div class="col-1">{{ (elapsed$ | async) || '00:00:00' }}</div>
       <div class="col-1">
         <button
           *ngIf="!currentEntry().start"
