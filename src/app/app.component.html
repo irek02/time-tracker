@@ -18,9 +18,9 @@
                   class="border-0 bg-transparent w-100 text-start p-1 m-1"
                   (click)="previousEntrySelected(entry, autocompleteInput)">
                   {{ entry.description }}
-                  <span *ngIf="getProjectById(entry.project_id) as project" [ngClass]="'color-' + project.color">
-                     • {{ project.name }}
-                    </span>
+                  <span *ngIf="entry.project" [ngClass]="'color-' + entry.project.color">
+                    • {{ entry.project.name }}
+                  </span>
                 </button>
               </li>
             </ul>
@@ -30,16 +30,16 @@
       <div class="me-auto col-2">
         <div class="dropdown">
           <button class="btn btn-link text-decoration-none" type="button" data-bs-toggle="dropdown">
-            <span *ngIf="getProjectById(currentEntry().project_id) as project" [ngClass]="'color-' + project.color">
-              • {{ project.name }}
+            <span *ngIf="currentEntry().project?.name" [ngClass]="'color-' + currentEntry().project?.color">
+              • {{ currentEntry().project?.name }}
             </span>
-            <span *ngIf="!getProjectById(currentEntry().project_id)"><i class="bi-folder me-1"></i> Create project</span>
+            <span *ngIf="!currentEntry().project"><i class="bi-folder me-1"></i> Create project</span>
           </button>
           <div class="dropdown-menu">
             <input #projectInput class="form-control m-2 w-75">
             <ul class="list-unstyled">
               <li *ngFor="let project of filteredProjects(projectInput.value, projects())" class="m-1">
-                <button type="button" class="btn btn-link text-decoration-none" (click)="updateCurrentEntry({ project_id: project.id })">
+                <button type="button" class="btn btn-link text-decoration-none" (click)="updateCurrentEntry({ project: project })">
                   <span [ngClass]="'color-' + project.color">
                     • {{ project.name }}
                   </span>
@@ -88,10 +88,10 @@
         <div class="flex-grow-1">
           <div class="dropdown">
             <button class="btn btn-link text-decoration-none" type="button" data-bs-toggle="dropdown">
-              <span *ngIf="getProjectById(entry.project_id) as project" [ngClass]="'color-' + project.color">
-                • {{ project.name }}
+              <span *ngIf="entry.project" [ngClass]="'color-' + entry.project.color">
+                • {{ entry.project.name }}
               </span>
-              <span *ngIf="!getProjectById(entry.project_id)"><i class="bi-folder me-1"></i> Create project</span>
+              <span *ngIf="!entry.project"><i class="bi-folder me-1"></i> Create project</span>
             </button>
             <div class="dropdown-menu">
               <input #projectInput class="form-control m-2 w-75">

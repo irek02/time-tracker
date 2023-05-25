@@ -1,5 +1,5 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewChild, computed, effect, signal } from '@angular/core';
-import { Observable, interval, map } from 'rxjs';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, Renderer2, Signal, ViewChild, computed, effect, signal } from '@angular/core';
+import { Observable, interval, map, of } from 'rxjs';
 
 interface Entry {
   id: number;
@@ -15,10 +15,19 @@ interface Project {
   color: string;
 }
 
+interface EntryComputed {
+  id: number;
+  project: Project | null;
+  start: number;
+  stop: number;
+  description: string;
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
 
@@ -27,14 +36,15 @@ export class AppComponent implements OnInit {
   elapsed = '';
   dropdownOpen = false;
 
-  currentEntry = signal<Partial<Entry>>({
-    project_id: null,
+  currentEntry = signal<Partial<EntryComputed>>({
+    project: null,
     start: 0,
     description: '',
   });
 
   entries = signal<Entry[]>([]);
-  entriesReversed;
+  entriesComputed: Signal<EntryComputed[]> = signal([]);
+  entriesReversed: Signal<EntryComputed[]> = signal([]);
   projects = signal<Project[]>([]);
   colors = ['blue', 'purple', 'red', 'orange', 'green'];
   elapsed$: Observable<string>;
@@ -57,7 +67,14 @@ export class AppComponent implements OnInit {
       this.projects.set(JSON.parse(savedProjects))
     }
 
-    this.entriesReversed = computed(() => [...this.entries()].reverse());
+    this.entriesComputed = computed(() => this.entries().map(entry => ({
+      id: entry.id,
+      project: this.getProjectById(entry.project_id),
+      start: entry.start,
+      stop: entry.start,
+      description: entry.description,
+    })));
+    this.entriesReversed = computed(() => [...this.entriesComputed()].reverse());
 
     this.elapsed$ = interval(100).pipe(
       map(() => {
@@ -77,12 +94,21 @@ export class AppComponent implements OnInit {
 
   }
 
-  filteredEntries(term: string, entries: Entry[]) {
+  filteredEntries(term: string, entries: EntryComputed[]) {
+
+    console.log('filtered');
 
     return entries
-      .filter(entry => !!entry.description || !!entry.project_id)
-      .filter(entry => entry.description?.toLowerCase().includes(term) ||
-      this.getProjectById(entry.project_id)?.name.toLocaleLowerCase().includes(term));
+      .filter(entry => !!entry.description || !!entry.project)
+      // .filter(entry => {
+      //   console.log('term', term);
+      //   console.log('desc', entry.description);
+      //   console.log('proj', this.getProjectById(entry.project_id)?.name);
+      //   return entry.description?.toLowerCase().includes(term.toLowerCase()) ||
+      //     this.getProjectById(entry.project_id)?.name.toLowerCase().includes(term.toLowerCase())
+      // });
+      .filter(entry => entry.description?.toLowerCase().includes(term.toLowerCase()) ||
+      entry.project?.name.toLowerCase().includes(term.toLowerCase()));
 
   }
 
@@ -130,7 +156,7 @@ export class AppComponent implements OnInit {
 
     this.entries.mutate(entries => entries.push({
       id: this.entries().length + 1,
-      project_id: this.currentEntry().project_id || null,
+      project_id: this.currentEntry().project?.id || null,
       start: this.currentEntry().start || 0,
       stop: this.getNowMs(),
       description: this.currentEntry().description || '',
@@ -142,10 +168,10 @@ export class AppComponent implements OnInit {
 
   }
 
-  trackAgain(entry: Entry) {
+  trackAgain(entry: EntryComputed) {
 
     this.currentEntry.set({
-      project_id: entry.project_id,
+      project: entry.project,
       description: entry.description,
     });
 
@@ -165,10 +191,10 @@ export class AppComponent implements OnInit {
 
   }
 
-  previousEntrySelected(entry: Entry, el: any) {
+  previousEntrySelected(entry: EntryComputed, el: any) {
 
     this.updateCurrentEntry({
-      project_id: entry.project_id,
+      project: entry?.project,
       description: entry.description,
     });
     if (!this.currentEntry().start) {
@@ -185,7 +211,7 @@ export class AppComponent implements OnInit {
 
   }
 
-  updateCurrentEntry(props: Partial<Entry>) {
+  updateCurrentEntry(props: Partial<EntryComputed>) {
 
     this.currentEntry.update(entry => ({ ...entry, ...props }));
 
