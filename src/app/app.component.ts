@@ -15,7 +15,7 @@ interface Project {
   color: string;
 }
 
-interface EntryComputed {
+export interface EntryComputed {
   id: number;
   project: Project | null;
   start: number;
@@ -34,7 +34,6 @@ export class AppComponent implements OnInit {
   title = 'time-tracker';
 
   elapsed = '';
-  dropdownOpen = false;
 
   currentEntry = signal<Partial<EntryComputed>>({
     project: null,
@@ -49,10 +48,7 @@ export class AppComponent implements OnInit {
   colors = ['blue', 'purple', 'red', 'orange', 'green'];
   elapsed$: Observable<string>;
 
-  @ViewChild('autocompleteContainer') autocompleteContainer: ElementRef | null = null;
-
   constructor(
-    private renderer: Renderer2,
   ) {
 
     const savedEntries = localStorage.getItem('entries');
@@ -94,24 +90,6 @@ export class AppComponent implements OnInit {
 
   }
 
-  filteredEntries(term: string, entries: EntryComputed[]) {
-
-    console.log('filtered');
-
-    return entries
-      .filter(entry => !!entry.description || !!entry.project)
-      // .filter(entry => {
-      //   console.log('term', term);
-      //   console.log('desc', entry.description);
-      //   console.log('proj', this.getProjectById(entry.project_id)?.name);
-      //   return entry.description?.toLowerCase().includes(term.toLowerCase()) ||
-      //     this.getProjectById(entry.project_id)?.name.toLowerCase().includes(term.toLowerCase())
-      // });
-      .filter(entry => entry.description?.toLowerCase().includes(term.toLowerCase()) ||
-      entry.project?.name.toLowerCase().includes(term.toLowerCase()));
-
-  }
-
   filteredProjects(term: string, projects: Project[]) {
 
     return projects.filter(project => project.name.includes(term));
@@ -119,12 +97,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-    this.renderer.listen('window', 'click', (e:Event) => {
-      if (!this.autocompleteContainer?.nativeElement.contains(e.target)){
-        this.dropdownOpen = false;
-      }
-    });
 
   }
 
@@ -191,7 +163,7 @@ export class AppComponent implements OnInit {
 
   }
 
-  previousEntrySelected(entry: EntryComputed, el: any) {
+  previousEntrySelected(entry: EntryComputed) {
 
     this.updateCurrentEntry({
       project: entry?.project,
@@ -200,8 +172,6 @@ export class AppComponent implements OnInit {
     if (!this.currentEntry().start) {
       this.startTimer();
     }
-    this.dropdownOpen = false;
-    el.focus();
 
   }
 

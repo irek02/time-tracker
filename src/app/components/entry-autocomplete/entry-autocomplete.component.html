@@ -1,0 +1,26 @@
+<div #autocompleteContainer>
+  <input
+    #autocompleteInput
+    class="form-control"
+    placeholder="What are you working on?"
+    [value]="currentEntry.description || ''"
+    (keyup)="inputKeyup.next($any($event.target).value)"
+    (click)="dropdownOpen.set(true)">
+  <ng-container *ngIf="filteredEntries(autocompleteInput.value, entries) as filteredEntries">
+    <div *ngIf="dropdownOpen() && filteredEntries.length > 1" class="card card-body position-absolute col-6" style="z-index: 1000">
+      <ul class="list-unstyled">
+        <li *ngFor="let entry of filteredEntries">
+          <button
+            type="button"
+            class="border-0 bg-transparent w-100 text-start p-1 m-1"
+            (click)="entrySelected.next(entry); dropdownOpen.set(false); autocompleteInput.focus()">
+            {{ entry.description }}
+            <span *ngIf="entry.project" [ngClass]="'color-' + entry.project.color">
+              • {{ entry.project.name }}
+            </span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </ng-container>
+</div>
