@@ -8,11 +8,17 @@
   <div class="dropdown-menu" style="width: 265px;">
     <input #projectInput class="form-control m-2 w-75" placeholder="Filter or create a project">
     <ul class="list-unstyled">
-      <li *ngFor="let project of filteredProjects(projectInput.value, projects)" class="m-1">
+      <li *ngFor="let project of filteredProjects(projectInput.value, projects)" class="m-1 d-flex">
         <button type="button" class="btn btn-link text-decoration-none" (click)="projectSelected.next(project)">
           <span [ngClass]="'color-' + project.color">
             • {{ project.name }}
           </span>
+        </button>
+        <button
+          class="btn btn-outline-secondary btn-sm border border-0 ms-auto me-3"
+          type="button"
+          (click)="projectDeleted.next(project.id)">
+          <i class="bi-trash"></i>
         </button>
       </li>
     </ul>

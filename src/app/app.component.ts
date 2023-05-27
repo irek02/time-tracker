@@ -184,6 +184,12 @@ export class AppComponent implements OnInit {
 
   }
 
+  deleteProject(id: number) {
+
+    this.projects.update(projects => projects.filter(project => project.id != id));
+
+  }
+
   getDuration(startMs: number, stopMs: number): string {
 
     const asSec = Math.abs((stopMs - startMs) / 1000);

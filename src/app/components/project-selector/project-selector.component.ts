@@ -13,6 +13,7 @@ export class ProjectSelectorComponent {
 
   @Output() projectSelected = new EventEmitter<Project>();
   @Output() projectCreated = new EventEmitter<string>();
+  @Output() projectDeleted = new EventEmitter<number>();
 
   filteredProjects(term: string, projects: Project[]) {
 
