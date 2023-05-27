@@ -1,0 +1,27 @@
+<div class="dropdown">
+  <button class="btn btn-link text-decoration-none" type="button" data-bs-toggle="dropdown">
+    <span *ngIf="entry?.project?.name" [ngClass]="'color-' + entry?.project?.color">
+      • {{ entry?.project?.name }}
+    </span>
+    <span *ngIf="!entry?.project"><i class="bi-folder me-1"></i>Project</span>
+  </button>
+  <div class="dropdown-menu" style="width: 265px;">
+    <input #projectInput class="form-control m-2 w-75" placeholder="Filter or create a project">
+    <ul class="list-unstyled">
+      <li *ngFor="let project of filteredProjects(projectInput.value, projects)" class="m-1">
+        <button type="button" class="btn btn-link text-decoration-none" (click)="projectSelected.next(project)">
+          <span [ngClass]="'color-' + project.color">
+            • {{ project.name }}
+          </span>
+        </button>
+      </li>
+    </ul>
+    <button
+      *ngIf="projectInput.value"
+      type="button"
+      class="btn btn-link text-start"
+      (click)="projectCreated.next(projectInput.value)">
+      <i class="bi-folder-plus fs-5 me-2"></i>Create "{{ projectInput.value }}" project
+    </button>
+  </div>
+</div>

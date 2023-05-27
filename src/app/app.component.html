@@ -68,6 +68,16 @@
             <i class="bi-play"></i>
           </button>
         </div>
+        <div>
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown">
+              <i class="bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li><button type="button" class="dropdown-item" (click)="deleteEntry(entry.id)">Delete</button></li>
+            </ul>
+          </div>
+        </div>
       </li>
     </ul>
   </div>

@@ -178,6 +178,12 @@ export class AppComponent implements OnInit {
     console.log('he');
   }
 
+  deleteEntry(id: number) {
+
+    this.entries.update(entries => entries.filter(entry => entry.id != id));
+
+  }
+
   getDuration(startMs: number, stopMs: number): string {
 
     const asSec = Math.abs((stopMs - startMs) / 1000);
