@@ -1,6 +1,6 @@
 <div class="d-flex">
 
-  <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 230px;">
+  <div class="d-flex flex-column flex-shrink-0 p-3 bg-secondary-subtle" style="width: 230px;">
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
         <a href="#" class="nav-link active" aria-current="page">
@@ -67,7 +67,7 @@
         </div>
       </div>
     </div>
-    <div class="card mt-3">
+    <div class="card my-3">
       <div class="card-body">
         <div class="card-title">Today</div>
       </div>
@@ -91,7 +91,17 @@
             <i class="bi-tag fs-3"></i>
           </div>
           <div>
-            {{ getTimeString(entry.start) }} - {{ getTimeString(entry.stop) }}
+            <input
+              #inputStart
+              [value]="getTimeString(entry.start)"
+              (focusout)="updateEntry(entry.id, { start: parseIrek(inputStart.value) })"
+              class="form-control d-inline"
+              style="width: 120px">
+            -
+            <input
+              [value]="getTimeString(entry.stop)"
+              class="form-control d-inline"
+              style="width: 120px">
           </div>
           <div>
             {{ getDuration(entry.start, entry.stop) }}

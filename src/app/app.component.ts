@@ -147,6 +147,11 @@ export class AppComponent implements OnInit {
 
   }
 
+  parseIrek(date: string) {
+    console.log(date);
+    return 0;
+  }
+
   previousEntrySelected(entry: EntryComputed) {
 
     this.updateCurrentEntry({
