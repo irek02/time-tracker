@@ -10,33 +10,12 @@
         </app-entry-autocomplete>
       </div>
       <div class="me-auto col-2">
-        <div class="dropdown">
-          <button class="btn btn-link text-decoration-none" type="button" data-bs-toggle="dropdown">
-            <span *ngIf="currentEntry().project?.name" [ngClass]="'color-' + currentEntry().project?.color">
-              • {{ currentEntry().project?.name }}
-            </span>
-            <span *ngIf="!currentEntry().project"><i class="bi-folder me-1"></i>Project</span>
-          </button>
-          <div class="dropdown-menu">
-            <input #projectInput class="form-control m-2 w-75">
-            <ul class="list-unstyled">
-              <li *ngFor="let project of filteredProjects(projectInput.value, projects())" class="m-1">
-                <button type="button" class="btn btn-link text-decoration-none" (click)="updateCurrentEntry({ project: project })">
-                  <span [ngClass]="'color-' + project.color">
-                    • {{ project.name }}
-                  </span>
-                </button>
-              </li>
-            </ul>
-            <button
-              *ngIf="projectInput.value"
-              type="button"
-              class="btn btn-link text-start"
-              (click)="createProject(projectInput.value)">
-              <i class="bi-folder-plus fs-5 me-2"></i>Create "{{ projectInput.value }}" project
-            </button>
-          </div>
-        </div>
+        <app-project-selector
+          [entry]="currentEntry()"
+          [projects]="projects()"
+          (projectSelected)="updateCurrentEntry({ project: $event })"
+          (projectCreated)="createProject($event)"
+        ></app-project-selector>
       </div>
       <div class="col-1"><i class="bi-tag fs-3"></i></div>
       <div class="col-1">{{ (elapsed$ | async) || '00:00:00' }}</div>
@@ -68,33 +47,12 @@
             [value]="entry.description || ''" (focusout)="updateEntry(entry.id, { description: $any($event.target).value })">
         </div>
         <div class="flex-grow-1">
-          <div class="dropdown">
-            <button class="btn btn-link text-decoration-none" type="button" data-bs-toggle="dropdown">
-              <span *ngIf="entry.project" [ngClass]="'color-' + entry.project.color">
-                • {{ entry.project.name }}
-              </span>
-              <span *ngIf="!entry.project"><i class="bi-folder me-1"></i>Project</span>
-            </button>
-            <div class="dropdown-menu">
-              <input #projectInput class="form-control m-2 w-75">
-              <ul class="list-unstyled">
-                <li *ngFor="let project of filteredProjects(projectInput.value, projects())" class="m-1">
-                  <button type="button" class="btn btn-link text-decoration-none" (click)="updateEntry(entry.id, { project_id: project.id })">
-                    <span [ngClass]="'color-' + project.color">
-                      • {{ project.name }}
-                    </span>
-                  </button>
-                </li>
-              </ul>
-              <button
-                *ngIf="projectInput.value"
-                type="button"
-                class="btn btn-link text-start"
-                (click)="createProject(projectInput.value)">
-                <i class="bi-folder-plus fs-5 me-2"></i>Create "{{ projectInput.value }}" project
-              </button>
-            </div>
-          </div>
+          <app-project-selector
+            [entry]="entry"
+            [projects]="projects()"
+            (projectSelected)="updateEntry(entry.id, { project_id: $event.id })"
+            (projectCreated)="createProject($event)"
+          ></app-project-selector>
         </div>
         <div>
           <i class="bi-tag fs-3"></i>

@@ -9,7 +9,7 @@ interface Entry {
   description: string;
 }
 
-interface Project {
+export interface Project {
   id: number;
   name: string;
   color: string;
@@ -90,11 +90,11 @@ export class AppComponent implements OnInit {
 
   }
 
-  filteredProjects(term: string, projects: Project[]) {
+  // filteredProjects(term: string, projects: Project[]) {
 
-    return projects.filter(project => project.name.includes(term));
+  //   return projects.filter(project => project.name.includes(term));
 
-  }
+  // }
 
   ngOnInit(): void {
 
