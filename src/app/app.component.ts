@@ -189,8 +189,6 @@ export class AppComponent implements OnInit {
 
   updateEntry(id: number, props: Partial<Entry>) {
 
-    console.log(id, props);
-
     this.entries.mutate(entries => {
       const index = entries.findIndex(entry => entry.id === id);
       entries[index] = { ...entries[index], ...props };

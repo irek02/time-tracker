@@ -7,7 +7,7 @@
     (keyup)="inputKeyup.next($any($event.target).value)"
     (click)="dropdownOpen.set(true)">
   <ng-container *ngIf="filteredEntries(autocompleteInput.value, entries) as filteredEntries">
-    <div *ngIf="dropdownOpen() && filteredEntries.length > 1" class="card card-body position-absolute col-6" style="z-index: 1000">
+    <div *ngIf="dropdownOpen() && filteredEntries.length > 0" class="card card-body position-absolute col-6" style="z-index: 1000">
       <ul class="list-unstyled">
         <li *ngFor="let entry of filteredEntries">
           <button

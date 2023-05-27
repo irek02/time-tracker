@@ -27,7 +27,6 @@ export class EntryAutocompleteComponent {
   ngOnInit(): void {
 
     this.renderer.listen('window', 'click', (e:Event) => {
-      console.log(this.autocompleteContainer?.nativeElement.contains(e.target));
       if (!this.autocompleteContainer?.nativeElement.contains(e.target)){
         this.dropdownOpen.set(false);
       }
@@ -37,19 +36,16 @@ export class EntryAutocompleteComponent {
 
   filteredEntries(term: string, entries: EntryComputed[]) {
 
-    console.log('filtered');
+    const entriesHash: { [key: string]: EntryComputed } = {};
 
-    return entries
+    entries.forEach(entry => {
+      entriesHash[entry.description + entry.project?.name] = entry;
+    });
+
+    return Object.values(entriesHash)
       .filter(entry => !!entry.description || !!entry.project)
-      // .filter(entry => {
-      //   console.log('term', term);
-      //   console.log('desc', entry.description);
-      //   console.log('proj', this.getProjectById(entry.project_id)?.name);
-      //   return entry.description?.toLowerCase().includes(term.toLowerCase()) ||
-      //     this.getProjectById(entry.project_id)?.name.toLowerCase().includes(term.toLowerCase())
-      // });
       .filter(entry => entry.description?.toLowerCase().includes(term.toLowerCase()) ||
-      entry.project?.name.toLowerCase().includes(term.toLowerCase()));
+        entry.project?.name.toLowerCase().includes(term.toLowerCase()));
 
   }
 

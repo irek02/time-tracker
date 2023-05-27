@@ -15,7 +15,7 @@
             <span *ngIf="currentEntry().project?.name" [ngClass]="'color-' + currentEntry().project?.color">
               • {{ currentEntry().project?.name }}
             </span>
-            <span *ngIf="!currentEntry().project"><i class="bi-folder me-1"></i> Create project</span>
+            <span *ngIf="!currentEntry().project"><i class="bi-folder me-1"></i>Project</span>
           </button>
           <div class="dropdown-menu">
             <input #projectInput class="form-control m-2 w-75">
@@ -73,7 +73,7 @@
               <span *ngIf="entry.project" [ngClass]="'color-' + entry.project.color">
                 • {{ entry.project.name }}
               </span>
-              <span *ngIf="!entry.project"><i class="bi-folder me-1"></i> Create project</span>
+              <span *ngIf="!entry.project"><i class="bi-folder me-1"></i>Project</span>
             </button>
             <div class="dropdown-menu">
               <input #projectInput class="form-control m-2 w-75">
