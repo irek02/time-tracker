@@ -33,8 +33,6 @@ export class AppComponent implements OnInit {
 
   title = 'time-tracker';
 
-  elapsed = '';
-
   currentEntry = signal<Partial<EntryComputed>>({
     project: null,
     start: 0,
@@ -65,9 +63,9 @@ export class AppComponent implements OnInit {
 
     this.entriesComputed = computed(() => this.entries().map(entry => ({
       id: entry.id,
-      project: this.getProjectById(entry.project_id),
+      project: this.projects().find(project => project.id === entry.project_id) || null,
       start: entry.start,
-      stop: entry.start,
+      stop: entry.stop,
       description: entry.description,
     })));
     this.entriesReversed = computed(() => [...this.entriesComputed()].reverse());
@@ -90,19 +88,7 @@ export class AppComponent implements OnInit {
 
   }
 
-  // filteredProjects(term: string, projects: Project[]) {
-
-  //   return projects.filter(project => project.name.includes(term));
-
-  // }
-
   ngOnInit(): void {
-
-  }
-
-  filterProjectByName(project: Project, term: string) {
-
-    return project.name.includes(term);
 
   }
 
@@ -135,8 +121,6 @@ export class AppComponent implements OnInit {
     }));
 
     this.currentEntry.set({});
-
-    this.elapsed = '';
 
   }
 
@@ -172,12 +156,6 @@ export class AppComponent implements OnInit {
     if (!this.currentEntry().start) {
       this.startTimer();
     }
-
-  }
-
-  getProjectById(id: number | null | undefined): Project | null {
-
-    return this.projects().find(project => project.id === id) || null;
 
   }
 
