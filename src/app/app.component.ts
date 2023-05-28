@@ -1,22 +1,24 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnInit, Renderer2, Signal, ViewChild, computed, effect, signal } from '@angular/core';
 import { Observable, interval, map, of } from 'rxjs';
 
+import * as moment from 'moment';
+
 interface Entry {
-  id: number;
-  project_id: number | null;
+  id: string;
+  project_id: string | null;
   start: number;
   stop: number;
   description: string;
 }
 
 export interface Project {
-  id: number;
+  id: string;
   name: string;
   color: string;
 }
 
 export interface EntryComputed {
-  id: number;
+  id: string;
   project: Project | null;
   start: number;
   stop: number;
@@ -113,7 +115,7 @@ export class AppComponent implements OnInit {
   stopTimer(): void {
 
     this.entries.mutate(entries => entries.push({
-      id: this.entries().length + 1,
+      id: crypto.randomUUID(),
       project_id: this.currentEntry().project?.id || null,
       start: this.currentEntry().start || 0,
       stop: this.getNowMs(),
@@ -140,16 +142,35 @@ export class AppComponent implements OnInit {
   createProject(name: string): void {
 
     this.projects.mutate(projects => projects.push({
-      id: projects.length + 1,
+      id: crypto.randomUUID(),
       name,
       color: this.colors[Math.floor(Math.random() * this.colors.length)],
     }));
 
   }
 
-  parseIrek(date: string) {
-    console.log(date);
-    return 0;
+  parseIrek(date: string, timestamp: number): number {
+
+    const parsed = date.split(':');
+
+    let hours = parseInt(parsed[0]);
+    const minutes = parseInt(parsed[1]);
+    const parsed2 = parsed[2].split(' ');
+    const seconds = parseInt(parsed2[0]);
+    const ampm = parsed2[1];
+
+    if (ampm.toUpperCase() === 'PM') {
+      hours = hours + 12;
+    }
+
+    const newDate = moment(timestamp);
+
+    newDate.hours(hours);
+    newDate.minutes(minutes);
+    newDate.seconds(seconds);
+
+    return newDate.valueOf();
+
   }
 
   previousEntrySelected(entry: EntryComputed) {
@@ -170,7 +191,7 @@ export class AppComponent implements OnInit {
 
   }
 
-  updateEntry(id: number, props: Partial<Entry>) {
+  updateEntry(id: string, props: Partial<Entry>) {
 
     this.entries.mutate(entries => {
       const index = entries.findIndex(entry => entry.id === id);
@@ -183,13 +204,13 @@ export class AppComponent implements OnInit {
     console.log('he');
   }
 
-  deleteEntry(id: number) {
+  deleteEntry(id: string) {
 
     this.entries.update(entries => entries.filter(entry => entry.id != id));
 
   }
 
-  deleteProject(id: number) {
+  deleteProject(id: string) {
 
     this.projects.update(projects => projects.filter(project => project.id != id));
 

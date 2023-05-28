@@ -94,13 +94,15 @@
             <input
               #inputStart
               [value]="getTimeString(entry.start)"
-              (focusout)="updateEntry(entry.id, { start: parseIrek(inputStart.value) })"
+              (focusout)="updateEntry(entry.id, { start: parseIrek(inputStart.value, entry.start) })"
               class="form-control d-inline"
               style="width: 120px">
             -
             <input
+              #inputStop
               [value]="getTimeString(entry.stop)"
               class="form-control d-inline"
+              (focusout)="updateEntry(entry.id, { stop: parseIrek(inputStop.value, entry.stop) })"
               style="width: 120px">
           </div>
           <div>
