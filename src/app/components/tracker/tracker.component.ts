@@ -11,7 +11,6 @@ import { DataService, EntryComputed } from 'src/app/services/data.service';
 })
 export class TrackerComponent {
 
-  colors = ['blue', 'purple', 'red', 'orange', 'green'];
   elapsed$: Observable<string>;
 
   constructor(
@@ -75,16 +74,6 @@ export class TrackerComponent {
 
   }
 
-  createProject(name: string): void {
-
-    this.dataService.projects.mutate(projects => projects.push({
-      id: crypto.randomUUID(),
-      name,
-      color: this.colors[Math.floor(Math.random() * this.colors.length)],
-    }));
-
-  }
-
   parseIrek(date: string, timestamp: number): number {
 
     const parsed = date.split(':');
@@ -115,15 +104,10 @@ export class TrackerComponent {
       project: entry?.project,
       description: entry.description,
     });
+
     if (!this.dataService.currentEntry().start) {
       this.startTimer();
     }
-
-  }
-
-  deleteProject(id: string) {
-
-    this.dataService.projects.update(projects => projects.filter(project => project.id != id));
 
   }
 
