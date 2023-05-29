@@ -1,28 +1,7 @@
-import { ChangeDetectionStrategy, Component, Signal, computed, effect, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable, interval, map } from 'rxjs';
 import * as moment from 'moment';
-
-interface Entry {
-  id: string;
-  project_id: string | null;
-  start: number;
-  stop: number;
-  description: string;
-}
-
-export interface Project {
-  id: string;
-  name: string;
-  color: string;
-}
-
-export interface EntryComputed {
-  id: string;
-  project: Project | null;
-  start: number;
-  stop: number;
-  description: string;
-}
+import { DataService, Entry, EntryComputed } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-tracker',
@@ -32,58 +11,23 @@ export interface EntryComputed {
 })
 export class TrackerComponent {
 
-  currentEntry = signal<Partial<EntryComputed>>({
-    project: null,
-    start: 0,
-    description: '',
-  });
-
-  entries = signal<Entry[]>([]);
-  entriesComputed: Signal<EntryComputed[]> = signal([]);
-  entriesReversed: Signal<EntryComputed[]> = signal([]);
-  projects = signal<Project[]>([]);
   colors = ['blue', 'purple', 'red', 'orange', 'green'];
   elapsed$: Observable<string>;
 
   constructor(
+    public dataService: DataService,
   ) {
 
-    const savedEntries = localStorage.getItem('entries');
-
-    if (savedEntries) {
-      this.entries.set(JSON.parse(savedEntries))
-    }
-
-    const savedProjects = localStorage.getItem('projects');
-
-    if (savedProjects) {
-      this.projects.set(JSON.parse(savedProjects))
-    }
-
-    this.entriesComputed = computed(() => this.entries().map(entry => ({
-      id: entry.id,
-      project: this.projects().find(project => project.id === entry.project_id) || null,
-      start: entry.start,
-      stop: entry.stop,
-      description: entry.description,
-    })));
-    this.entriesReversed = computed(() => [...this.entriesComputed()].reverse());
 
     this.elapsed$ = interval(100).pipe(
       map(() => {
-        if (this.currentEntry().start) {
-          return this.getDuration(this.currentEntry().start || 0, this.getNowMs());
+        if (this.dataService.currentEntry().start) {
+          return this.getDuration(this.dataService.currentEntry().start || 0, this.getNowMs());
         }
         return '';
       }),
     );
 
-    effect(() => localStorage.setItem('entries', JSON.stringify(this.entries())));
-    effect(() => localStorage.setItem('projects', JSON.stringify(this.projects())));
-
-    effect(() => console.log('projects', this.projects()));
-    effect(() => console.log('entries', this.entries()));
-    effect(() => console.log('currentEntry', this.currentEntry()));
 
   }
 
@@ -101,32 +45,32 @@ export class TrackerComponent {
 
   startTimer(): void {
 
-    this.currentEntry.mutate(entry => entry.start = Date.now());
+    this.dataService.currentEntry.mutate(entry => entry.start = Date.now());
 
   }
 
   stopTimer(): void {
 
-    this.entries.mutate(entries => entries.push({
+    this.dataService.entries.mutate(entries => entries.push({
       id: crypto.randomUUID(),
-      project_id: this.currentEntry().project?.id || null,
-      start: this.currentEntry().start || 0,
+      project_id: this.dataService.currentEntry().project?.id || null,
+      start: this.dataService.currentEntry().start || 0,
       stop: this.getNowMs(),
-      description: this.currentEntry().description || '',
+      description: this.dataService.currentEntry().description || '',
     }));
 
-    this.currentEntry.set({});
+    this.dataService.currentEntry.set({});
 
   }
 
   trackAgain(entry: EntryComputed) {
 
-    this.currentEntry.set({
+    this.dataService.currentEntry.set({
       project: entry.project,
       description: entry.description,
     });
 
-    if (!this.currentEntry().start) {
+    if (!this.dataService.currentEntry().start) {
       this.startTimer();
     }
 
@@ -134,7 +78,7 @@ export class TrackerComponent {
 
   createProject(name: string): void {
 
-    this.projects.mutate(projects => projects.push({
+    this.dataService.projects.mutate(projects => projects.push({
       id: crypto.randomUUID(),
       name,
       color: this.colors[Math.floor(Math.random() * this.colors.length)],
@@ -172,7 +116,7 @@ export class TrackerComponent {
       project: entry?.project,
       description: entry.description,
     });
-    if (!this.currentEntry().start) {
+    if (!this.dataService.currentEntry().start) {
       this.startTimer();
     }
 
@@ -180,13 +124,13 @@ export class TrackerComponent {
 
   updateCurrentEntry(props: Partial<EntryComputed>) {
 
-    this.currentEntry.update(entry => ({ ...entry, ...props }));
+    this.dataService.currentEntry.update(entry => ({ ...entry, ...props }));
 
   }
 
   updateEntry(id: string, props: Partial<Entry>) {
 
-    this.entries.mutate(entries => {
+    this.dataService.entries.mutate(entries => {
       const index = entries.findIndex(entry => entry.id === id);
       entries[index] = { ...entries[index], ...props };
     });
@@ -199,13 +143,13 @@ export class TrackerComponent {
 
   deleteEntry(id: string) {
 
-    this.entries.update(entries => entries.filter(entry => entry.id != id));
+    this.dataService.entries.update(entries => entries.filter(entry => entry.id != id));
 
   }
 
   deleteProject(id: string) {
 
-    this.projects.update(projects => projects.filter(project => project.id != id));
+    this.dataService.projects.update(projects => projects.filter(project => project.id != id));
 
   }
 

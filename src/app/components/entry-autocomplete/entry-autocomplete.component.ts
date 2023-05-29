@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, Renderer2, ViewChild, signal } from '@angular/core';
-import { EntryComputed } from '../tracker/tracker.component';
+import { EntryComputed } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-entry-autocomplete',

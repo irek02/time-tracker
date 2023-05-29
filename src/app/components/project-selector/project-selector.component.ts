@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { EntryComputed, Project } from '../tracker/tracker.component';
+import { EntryComputed, Project } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-project-selector',
