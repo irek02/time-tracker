@@ -3,129 +3,28 @@
   <div class="d-flex flex-column flex-shrink-0 p-3 bg-secondary-subtle" style="width: 230px;">
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
-        <a href="#" class="nav-link active" aria-current="page">
+        <a [routerLink]="'tracker'" class="nav-link" routerLinkActive="active">
           <i class="bi-speedometer fs-5 me-2"></i>
           Time tracker
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link">
+        <a [routerLink]="'projects'" class="nav-link" routerLinkActive="active">
           <i class="bi-folder fs-5 me-2"></i>
           Projects
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link">
+        <a [routerLink]="'reports'" class="nav-link" routerLinkActive="active">
           <i class="bi-bar-chart fs-5 me-2"></i>
           Reports
-        </a>
-      </li>
-      <li>
-        <a href="#" class="nav-link">
-          <i class="bi-tag fs-5 me-2"></i>
-          Tags
         </a>
       </li>
     </ul>
   </div>
 
   <div class="container">
-    <div class="card mt-5">
-      <div class="card-body d-flex align-items-center">
-        <div class="col-6">
-          <app-entry-autocomplete
-            [currentEntry]="currentEntry()"
-            [entries]="entriesReversed()"
-            (inputKeyup)="updateCurrentEntry({ description: $event })"
-            (entrySelected)="previousEntrySelected($event)">
-          </app-entry-autocomplete>
-        </div>
-        <div class="me-auto col-2">
-          <app-project-selector
-            [entry]="currentEntry()"
-            [projects]="projects()"
-            (projectSelected)="updateCurrentEntry({ project: $event })"
-            (projectCreated)="createProject($event)"
-            (projectDeleted)="deleteProject($event)"
-          ></app-project-selector>
-        </div>
-        <div class="col-1"><i class="bi-tag fs-3"></i></div>
-        <div class="col-1">{{ (elapsed$ | async) || '00:00:00' }}</div>
-        <div class="col-1">
-          <button
-            *ngIf="!currentEntry().start"
-            class="btn btn-primary"
-            (click)="startTimer()">
-            Start
-          </button>
-          <button
-            *ngIf="currentEntry().start"
-            class="btn btn-danger"
-            (click)="stopTimer()">
-            Stop
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="card my-3">
-      <div class="card-body">
-        <div class="card-title">Today</div>
-      </div>
-      <ul class="list-group list-group-flush">
-        <li *ngFor="let entry of entriesReversed(); let i = index" class="list-group-item d-flex justify-content-between align-items-center p-2 m-1 gap-3">
-          <div style="max-width: 50%;">
-            <input
-              class="form-control"
-              [value]="entry.description || ''" (focusout)="updateEntry(entry.id, { description: $any($event.target).value })">
-          </div>
-          <div class="flex-grow-1">
-            <app-project-selector
-              [entry]="entry"
-              [projects]="projects()"
-              (projectSelected)="updateEntry(entry.id, { project_id: $event.id })"
-              (projectCreated)="createProject($event)"
-              (projectDeleted)="deleteProject($event)"
-            ></app-project-selector>
-          </div>
-          <div>
-            <i class="bi-tag fs-3"></i>
-          </div>
-          <div>
-            <input
-              #inputStart
-              [value]="getTimeString(entry.start)"
-              (focusout)="updateEntry(entry.id, { start: parseIrek(inputStart.value, entry.start) })"
-              class="form-control d-inline"
-              style="width: 120px">
-            -
-            <input
-              #inputStop
-              [value]="getTimeString(entry.stop)"
-              class="form-control d-inline"
-              (focusout)="updateEntry(entry.id, { stop: parseIrek(inputStop.value, entry.stop) })"
-              style="width: 120px">
-          </div>
-          <div>
-            {{ getDuration(entry.start, entry.stop) }}
-          </div>
-          <div>
-            <button class="btn btn-secondary btn-sm" (click)="trackAgain(entry)">
-              <i class="bi-play"></i>
-            </button>
-          </div>
-          <div>
-            <div class="dropdown">
-              <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown">
-                <i class="bi-three-dots-vertical"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><button type="button" class="dropdown-item" (click)="deleteEntry(entry.id)">Delete</button></li>
-              </ul>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
+    <router-outlet></router-outlet>
   </div>
 
 </div>
