@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable, interval, map } from 'rxjs';
 import * as moment from 'moment';
-import { DataService, Entry, EntryComputed } from 'src/app/services/data.service';
+import { DataService, EntryComputed } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-tracker',
@@ -18,7 +18,6 @@ export class TrackerComponent {
     public dataService: DataService,
   ) {
 
-
     this.elapsed$ = interval(100).pipe(
       map(() => {
         if (this.dataService.currentEntry().start) {
@@ -27,7 +26,6 @@ export class TrackerComponent {
         return '';
       }),
     );
-
 
   }
 
@@ -45,29 +43,30 @@ export class TrackerComponent {
 
   startTimer(): void {
 
-    this.dataService.currentEntry.mutate(entry => entry.start = Date.now());
+    this.dataService.updateCurrentEntry({ start: Date.now() });
 
   }
 
   stopTimer(): void {
 
-    this.dataService.entries.mutate(entries => entries.push({
-      id: crypto.randomUUID(),
+    this.dataService.addEntry({
       project_id: this.dataService.currentEntry().project?.id || null,
       start: this.dataService.currentEntry().start || 0,
       stop: this.getNowMs(),
       description: this.dataService.currentEntry().description || '',
-    }));
+    });
 
-    this.dataService.currentEntry.set({});
+    this.dataService.resetCurrentEntry();
 
   }
 
   trackAgain(entry: EntryComputed) {
 
-    this.dataService.currentEntry.set({
+    this.dataService.updateCurrentEntry({
       project: entry.project,
       description: entry.description,
+      start: 0,
+      stop: 0,
     });
 
     if (!this.dataService.currentEntry().start) {
@@ -112,38 +111,13 @@ export class TrackerComponent {
 
   previousEntrySelected(entry: EntryComputed) {
 
-    this.updateCurrentEntry({
+    this.dataService.updateCurrentEntry({
       project: entry?.project,
       description: entry.description,
     });
     if (!this.dataService.currentEntry().start) {
       this.startTimer();
     }
-
-  }
-
-  updateCurrentEntry(props: Partial<EntryComputed>) {
-
-    this.dataService.currentEntry.update(entry => ({ ...entry, ...props }));
-
-  }
-
-  updateEntry(id: string, props: Partial<Entry>) {
-
-    this.dataService.entries.mutate(entries => {
-      const index = entries.findIndex(entry => entry.id === id);
-      entries[index] = { ...entries[index], ...props };
-    });
-
-  }
-
-  foo() {
-    console.log('he');
-  }
-
-  deleteEntry(id: string) {
-
-    this.dataService.entries.update(entries => entries.filter(entry => entry.id != id));
 
   }
 
