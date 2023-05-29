@@ -9,7 +9,7 @@
     <input #projectInput class="form-control m-2" style="width: 90%" placeholder="Filter or create a project">
     <ul class="list-unstyled">
       <li *ngFor="let project of filteredProjects(projectInput.value, projects)" class="m-1 d-flex">
-        <button type="button" class="btn btn-link text-decoration-none" (click)="projectSelected.next(project)">
+        <button type="button" class="btn btn-link text-decoration-none" (click)="projectSelected.next(project.id)">
           <span [ngClass]="'color-' + project.color">
             • {{ project.name }}
           </span>

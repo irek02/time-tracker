@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { EntryComputed, Project } from 'src/app/services/data.service';
+import { Entry, Project } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-project-selector',
@@ -8,10 +8,10 @@ import { EntryComputed, Project } from 'src/app/services/data.service';
 })
 export class ProjectSelectorComponent {
 
-  @Input() entry: Partial<EntryComputed> | null = null;
+  @Input() entry: Partial<Entry> | null = null;
   @Input() projects: Project[] = [];
 
-  @Output() projectSelected = new EventEmitter<Project>();
+  @Output() projectSelected = new EventEmitter<string>();
   @Output() projectCreated = new EventEmitter<string>();
   @Output() projectDeleted = new EventEmitter<string>();
 

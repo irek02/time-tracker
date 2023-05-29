@@ -12,7 +12,7 @@
       <app-project-selector
         [entry]="dataService.currentEntry()"
         [projects]="dataService.projects()"
-        (projectSelected)="dataService.updateCurrentEntry({ project: $event })"
+        (projectSelected)="dataService.updateCurrentEntry({ project_id: $event })"
         (projectCreated)="dataService.addProject($event)"
         (projectDeleted)="dataService.deleteProject($event)"
       ></app-project-selector>
@@ -50,7 +50,7 @@
         <app-project-selector
           [entry]="entry"
           [projects]="dataService.projects()"
-          (projectSelected)="dataService.updateEntry(entry.id, { project_id: $event.id })"
+          (projectSelected)="dataService.updateEntry(entry.id, { project_id: $event })"
           (projectCreated)="dataService.addProject($event)"
           (projectDeleted)="dataService.deleteProject($event)"
         ></app-project-selector>

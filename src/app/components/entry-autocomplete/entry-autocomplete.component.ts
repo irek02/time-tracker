@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, Renderer2, ViewChild, signal } from '@angular/core';
-import { EntryComputed } from 'src/app/services/data.service';
+import { Entry } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-entry-autocomplete',
@@ -9,11 +9,11 @@ import { EntryComputed } from 'src/app/services/data.service';
 })
 export class EntryAutocompleteComponent {
 
-  @Input() currentEntry: Partial<EntryComputed> = {};
-  @Input() entries: EntryComputed[] = [];
+  @Input() currentEntry: Partial<Entry> = {};
+  @Input() entries: Entry[] = [];
 
   @Output() inputKeyup = new EventEmitter<string>();
-  @Output() entrySelected = new EventEmitter<EntryComputed>();
+  @Output() entrySelected = new EventEmitter<Entry>();
 
   @ViewChild('autocompleteContainer') autocompleteContainer: ElementRef | null = null;
 
@@ -34,9 +34,9 @@ export class EntryAutocompleteComponent {
 
   }
 
-  filteredEntries(term: string, entries: EntryComputed[]) {
+  filteredEntries(term: string, entries: Entry[]) {
 
-    const entriesHash: { [key: string]: EntryComputed } = {};
+    const entriesHash: { [key: string]: Entry } = {};
 
     entries.forEach(entry => {
       entriesHash[entry.description + entry.project?.name] = entry;

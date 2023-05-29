@@ -1,8 +1,12 @@
-import { Injectable, Signal, computed, effect, signal } from '@angular/core';
+import { Injectable, WritableSignal, computed, effect, signal } from '@angular/core';
 
 export interface Entry {
   id: string;
-  project_id: string | null;
+  project: {
+    id: string;
+    name: string;
+    color: string;
+  } | null;
   start: number;
   stop: number;
   description: string;
@@ -14,12 +18,30 @@ export interface Project {
   color: string;
 }
 
-export interface EntryComputed {
-  id: string;
-  project: Project | null;
-  start: number;
-  stop: number;
-  description: string;
+export interface CurrentEntry {
+  start?: number;
+  description?: string;
+  project?: Project;
+}
+
+interface Store {
+  entries: WritableSignal<{
+    id: string;
+    project_id: string | null;
+    start: number;
+    stop: number;
+    description: string;
+  }[]>,
+  projects: WritableSignal<{
+    id: string;
+    name: string;
+    color: string;
+  }[]>,
+  currentEntry: WritableSignal<{
+    start?: number;
+    description?: string;
+    project_id?: string;
+  }>,
 }
 
 @Injectable({
@@ -27,14 +49,17 @@ export interface EntryComputed {
 })
 export class DataService {
 
-  private store = {
-    entries: signal<Entry[]>([]),
-    projects: signal<Project[]>([]),
-    currentEntry: signal<Partial<EntryComputed>>({}),
+  private store: Store = {
+    entries: signal([]),
+    projects: signal([]),
+    currentEntry: signal({}),
   };
 
-  public entries: Signal<EntryComputed[]> = computed(() => this.getComputedEntries());
-  public currentEntry = computed(() => this.store.currentEntry());
+  public currentEntry = computed(() => ({
+    ...this.store.currentEntry(),
+    project: this.projects().find(project => project.id === this.store.currentEntry().project_id)
+  }));
+  public entries = computed(() => this.getComputedEntries());
   public projects = computed(() => this.store.projects());
 
   constructor() {
@@ -76,7 +101,7 @@ export class DataService {
 
   }
 
-  public addEntry(entryProps: {
+  public addEntry(props: {
     project_id: string | null,
     start: number,
     stop: number,
@@ -85,15 +110,20 @@ export class DataService {
 
     this.store.entries.mutate(entries => entries.push({
       id: crypto.randomUUID(),
-      project_id: entryProps.project_id,
-      start: entryProps.start,
-      stop: entryProps.stop,
-      description: entryProps.description,
+      project_id: props.project_id,
+      start: props.start,
+      stop: props.stop,
+      description: props.description,
     }));
 
   }
 
-  public updateEntry(id: string, props: Partial<Entry>) {
+  public updateEntry(id: string, props: {
+    project_id?: string;
+    start?: number;
+    stop?: number;
+    description?: string;
+  }) {
 
     this.store.entries.mutate(entries => {
       const index = entries.findIndex(entry => entry.id === id);
@@ -108,7 +138,12 @@ export class DataService {
 
   }
 
-  public updateCurrentEntry(props: Partial<EntryComputed>) {
+  public updateCurrentEntry(props: {
+    start?: number;
+    stop?: number;
+    description?: string;
+    project_id?: string;
+  }) {
 
     this.store.currentEntry.update(entry => ({ ...entry, ...props }));
 

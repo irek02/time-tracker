@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable, interval, map } from 'rxjs';
 import * as moment from 'moment';
-import { DataService, EntryComputed } from 'src/app/services/data.service';
+import { DataService, Entry } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-tracker',
@@ -59,10 +59,10 @@ export class TrackerComponent {
 
   }
 
-  trackAgain(entry: EntryComputed) {
+  trackAgain(entry: Entry) {
 
     this.dataService.updateCurrentEntry({
-      project: entry.project,
+      project_id: entry.project?.id,
       description: entry.description,
       start: 0,
       stop: 0,
@@ -98,10 +98,10 @@ export class TrackerComponent {
 
   }
 
-  previousEntrySelected(entry: EntryComputed) {
+  previousEntrySelected(entry: Entry) {
 
     this.dataService.updateCurrentEntry({
-      project: entry?.project,
+      project_id: entry?.project?.id,
       description: entry.description,
     });
 
