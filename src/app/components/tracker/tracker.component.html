@@ -44,7 +44,8 @@
       <div style="max-width: 50%;">
         <input
           class="form-control"
-          [value]="entry.description || ''" (focusout)="dataService.updateEntry(entry.id, { description: $any($event.target).value })">
+          [value]="entry.description || ''"
+          (focusout)="dataService.updateEntry(entry.id, { description: $any($event.target).value })">
       </div>
       <div class="flex-grow-1">
         <app-project-selector

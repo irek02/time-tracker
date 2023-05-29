@@ -1,1 +1,22 @@
-<p>projects works!</p>
+<div class="card">
+  <div class="card-body">
+    <div class="card-title">Projects</div>
+  </div>
+  <ul class="list-group list-group-flush">
+    <li *ngFor="let project of dataService.projects()" class="list-group-item">
+      <input
+        #projectNameInput
+        [value]="project.name"
+        [ngClass]="'color-' + project.color"
+        (focusout)="dataService.updateProject(project.id, { name: projectNameInput.value })"
+        class="form-control d-inline me-5"
+        style="width: 250px;">
+      <button
+        *ngFor="let color of colors"
+        [ngClass]="'color-' + color"
+        (click)="dataService.updateProject(project.id, { color })">
+        {{ color }}
+      </button>
+    </li>
+  </ul>
+</div>

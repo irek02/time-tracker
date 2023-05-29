@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DataService, ProjectColor } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-projects',
@@ -6,5 +7,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./projects.component.scss']
 })
 export class ProjectsComponent {
+
+  colors: ProjectColor[] = ['blue', 'purple', 'red', 'orange', 'green'];
+
+  constructor(
+    public dataService: DataService,
+  ) {}
 
 }

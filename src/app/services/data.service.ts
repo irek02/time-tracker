@@ -24,6 +24,8 @@ export interface CurrentEntry {
   project?: Project;
 }
 
+export type ProjectColor = 'blue' | 'purple' | 'red' | 'orange' | 'green';
+
 interface Store {
   entries: WritableSignal<{
     id: string;
@@ -157,13 +159,25 @@ export class DataService {
 
   public addProject(name: string) {
 
-    const colors = ['blue', 'purple', 'red', 'orange', 'green'];
+    const colors: ProjectColor[] = ['blue', 'purple', 'red', 'orange', 'green'];
 
     this.store.projects.mutate(projects => projects.push({
       id: crypto.randomUUID(),
       name,
       color: colors[Math.floor(Math.random() * colors.length)],
     }));
+
+  }
+
+  public updateProject(id: string, props: {
+    name?: string,
+    color?: ProjectColor,
+  }) {
+
+    this.store.projects.mutate(projects => {
+      const index = projects.findIndex(project => project.id === id);
+      projects[index] = { ...projects[index], ...props };
+    });
 
   }
 
