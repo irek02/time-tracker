@@ -62,7 +62,7 @@ export class DataService {
     project: this.projects().find(project => project.id === this.store.currentEntry().project_id)
   }));
   public entries = computed(() => this.getComputedEntries());
-  public projects = computed(() => this.store.projects());
+  public projects = computed(() => this.store.projects().sort((a, b) => a.name > b.name ? 1 : -1));
 
   constructor() {
 

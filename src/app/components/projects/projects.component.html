@@ -3,19 +3,34 @@
     <div class="card-title">Projects</div>
   </div>
   <ul class="list-group list-group-flush">
+    <li class="list-group-item">
+      <input #projectInput class="form-control me-3 my-3 d-inline" style="width: 250px;" placeholder="Create a project">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="dataService.addProject(projectInput.value)">Create</button>
+    </li>
     <li *ngFor="let project of dataService.projects()" class="list-group-item">
       <input
         #projectNameInput
         [value]="project.name"
-        [ngClass]="'color-' + project.color"
+        [ngClass]="'text-' + project.color"
         (focusout)="dataService.updateProject(project.id, { name: projectNameInput.value })"
-        class="form-control d-inline me-5"
+        class="form-control d-inline me-3"
         style="width: 250px;">
       <button
         *ngFor="let color of colors"
-        [ngClass]="'color-' + color"
+        [ngClass]="['bg-' + color]"
+        class="border border-0 m-1 align-middle"
+        style="width: 25px; height: 25px;"
         (click)="dataService.updateProject(project.id, { color })">
-        {{ color }}
+        <span class="visually-hidden">{{ color }}</span>
+      </button>
+      <button
+        class="btn btn-outline-secondary btn-sm border border-0 ms-4"
+        type="button"
+        (click)="dataService.deleteProject(project.id)">
+        <i class="bi-trash fs-4"></i>
       </button>
     </li>
   </ul>

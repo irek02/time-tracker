@@ -15,7 +15,7 @@
             class="border-0 bg-transparent w-100 text-start p-1 m-1"
             (click)="entrySelected.next(entry); dropdownOpen.set(false); autocompleteInput.focus()">
             {{ entry.description }}
-            <span *ngIf="entry.project" [ngClass]="'color-' + entry.project.color">
+            <span *ngIf="entry.project" [ngClass]="'text-' + entry.project.color">
               • {{ entry.project.name }}
             </span>
           </button>
