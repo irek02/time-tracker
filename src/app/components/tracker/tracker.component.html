@@ -17,7 +17,6 @@
         (projectDeleted)="dataService.deleteProject($event)"
       ></app-project-selector>
     </div>
-    <div class="col-1"><i class="bi-tag fs-3"></i></div>
     <div class="col-1">{{ (elapsed$ | async) || '00:00:00' }}</div>
     <div class="col-1">
       <button
@@ -55,9 +54,6 @@
           (projectCreated)="dataService.addProject($event)"
           (projectDeleted)="dataService.deleteProject($event)"
         ></app-project-selector>
-      </div>
-      <div>
-        <i class="bi-tag fs-3"></i>
       </div>
       <div>
         <input
