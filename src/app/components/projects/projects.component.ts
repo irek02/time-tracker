@@ -9,6 +9,7 @@ import { DataService, ProjectColor } from 'src/app/services/data.service';
 export class ProjectsComponent {
 
   colors: ProjectColor[] = ['blue', 'purple', 'red', 'orange', 'green'];
+  defaultColor = this.colors[0];
 
   constructor(
     public dataService: DataService,

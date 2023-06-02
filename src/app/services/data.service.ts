@@ -157,14 +157,14 @@ export class DataService {
 
   }
 
-  public addProject(name: string) {
+  public addProject(name: string, color?: ProjectColor) {
 
     const colors: ProjectColor[] = ['blue', 'purple', 'red', 'orange', 'green'];
 
     this.store.projects.mutate(projects => projects.push({
       id: crypto.randomUUID(),
       name,
-      color: colors[Math.floor(Math.random() * colors.length)],
+      color: color || colors[Math.floor(Math.random() * colors.length)],
     }));
 
   }

@@ -4,11 +4,39 @@
   </div>
   <ul class="list-group list-group-flush">
     <li class="list-group-item">
-      <input #projectInput class="form-control me-3 my-3 d-inline" style="width: 250px;" placeholder="Create a project">
+      <input
+        #projectInput
+        class="form-control me-1 my-3 d-inline"
+        [ngClass]="'text-' + defaultColor"
+        style="width: 250px;"
+        placeholder="Create a project">
+      <div class="dropdown d-inline me-2">
+        <button
+          type="button"
+          class="border border-0 m-1 align-middle"
+          [ngClass]="'bg-' + defaultColor"
+          style="width: 25px; height: 25px;"
+          data-bs-toggle="dropdown">
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end p-3" style="min-width: 67px;">
+          <li *ngFor="let color of colors" class="">
+            <button
+              [ngClass]="['bg-' + color]"
+              class="border border-0 m-1 align-middle"
+              style="width: 25px; height: 25px;"
+              (click)="defaultColor = color"
+              >
+              <span class="visually-hidden">{{ color }}</span>
+            </button>
+          </li>
+        </ul>
+      </div>
       <button
         type="button"
         class="btn btn-primary"
-        (click)="dataService.addProject(projectInput.value)">Create</button>
+        (click)="dataService.addProject(projectInput.value, defaultColor); defaultColor = colors[0]; projectInput.value = ''">
+        Create
+      </button>
     </li>
     <li *ngFor="let project of dataService.projects()" class="list-group-item">
       <input
@@ -16,16 +44,31 @@
         [value]="project.name"
         [ngClass]="'text-' + project.color"
         (focusout)="dataService.updateProject(project.id, { name: projectNameInput.value })"
-        class="form-control d-inline me-3"
+        class="form-control d-inline me-1"
         style="width: 250px;">
-      <button
-        *ngFor="let color of colors"
-        [ngClass]="['bg-' + color]"
-        class="border border-0 m-1 align-middle"
-        style="width: 25px; height: 25px;"
-        (click)="dataService.updateProject(project.id, { color })">
-        <span class="visually-hidden">{{ color }}</span>
-      </button>
+
+      <div class="dropdown d-inline me-2">
+        <button
+          type="button"
+          class="border border-0 m-1 align-middle"
+          [ngClass]="'bg-' + project.color"
+          style="width: 25px; height: 25px;"
+          data-bs-toggle="dropdown">
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end p-3" style="min-width: 67px;">
+          <li *ngFor="let color of colors">
+            <button
+              [ngClass]="['bg-' + color]"
+              class="border border-0 m-1 align-middle"
+              style="width: 25px; height: 25px;"
+              (click)="dataService.updateProject(project.id, { color })"
+              >
+              <span class="visually-hidden">{{ color }}</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
       <button
         class="btn btn-outline-secondary btn-sm border border-0 ms-4"
         type="button"
