@@ -74,6 +74,11 @@
         {{ getDuration(entry.start, entry.stop) }}
       </div>
       <div>
+        <input matInput [matDatepicker]="picker" (dateInput)="updateEntryDate($event, entry)" class="visually-hidden">
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker [startAt]="getDate(entry.start)"></mat-datepicker>
+      </div>
+      <div>
         <button class="btn btn-secondary btn-sm" (click)="trackAgain(entry)">
           <i class="bi-play"></i>
         </button>

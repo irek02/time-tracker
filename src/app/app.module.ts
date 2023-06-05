@@ -9,6 +9,9 @@ import { ProjectSelectorComponent } from './components/project-selector/project-
 import { TrackerComponent } from './components/tracker/tracker.component';
 import { ReportsComponent } from './components/reports/reports.component';
 import { ProjectsComponent } from './components/projects/projects.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -23,6 +26,9 @@ import { ProjectsComponent } from './components/projects/projects.component';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    BrowserAnimationsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

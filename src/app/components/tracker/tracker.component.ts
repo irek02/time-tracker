@@ -126,4 +126,30 @@ export class TrackerComponent {
     return `${hourStr}:${minStr}:${secStr}`;
 
   }
+
+  getDate(timestampMs: number) {
+
+    return new Date(timestampMs);
+
+  }
+
+  updateEntryDate(e: any, entry: Entry) {
+
+    const newStart = moment(e.value)
+      .hour(moment(entry.start).hour())
+      .minute(moment(entry.start).minute())
+      .second(moment(entry.start).second());
+
+    const newStop = moment(e.value)
+      .hour(moment(entry.stop).hour())
+      .minute(moment(entry.stop).minute())
+      .second(moment(entry.stop).second());
+
+    this.dataService.updateEntry(entry.id, {
+      start: newStart.valueOf(),
+      stop: newStop.valueOf()
+    });
+
+  }
+
 }
