@@ -97,7 +97,7 @@ export class DataService {
       description: entry.description,
     }));
 
-    const entriesSortedOlderFirst = [...entriesWithProjects].reverse();
+    const entriesSortedOlderFirst = entriesWithProjects.sort((a, b) => a.start < b.start ? 1 : -1);
 
     return entriesSortedOlderFirst;
 
