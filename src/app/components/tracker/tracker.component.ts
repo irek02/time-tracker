@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Signal, computed, effect } from '@angular/core';
 import { Observable, interval, map } from 'rxjs';
 import * as moment from 'moment';
 import { DataService, Entry } from 'src/app/services/data.service';
@@ -12,23 +12,21 @@ import { DataService, Entry } from 'src/app/services/data.service';
 export class TrackerComponent {
 
   elapsed$: Observable<string>;
-  comp: any;
+  groupedEntries: Signal<{
+    [key: string]: {
+      [key: string]: Entry[];
+    }
+  }>;
 
   constructor(
     public dataService: DataService,
   ) {
 
-    this.comp = computed(() => {
-      // Create an array that's grouped my week and the day of week.
-      // const weeks = [
-      //   '1', '2', '3'
-      // ];
+    this.groupedEntries = computed(() => {
 
       const res: any = {};
 
       dataService.entries().forEach(entry => {
-        // const week = moment(entry.start).week();
-        // const date = moment(entry.start).date();
         const week = moment(entry.start).startOf('week').format('MMM D') + ' - ' + moment(entry.start).endOf('week').format('MMM D');
         const date = moment(entry.start).format('MMM D');
         if (!res[week]) {
@@ -37,27 +35,12 @@ export class TrackerComponent {
         if (!res[week][date]) {
           res[week][date] = []
         }
-        console.log({ 'start': moment(entry.start).toLocaleString(), 'w': week, 'd': date })
         res[week][date].push(entry);
       });
 
-      console.log(res);
-
-      for (let week in res) {
-        const weekDate = moment().week(parseInt(week));
-        console.log(week);
-        for (let date in res[week]) {
-          console.log(date);
-          res[week][date].forEach((entry: Entry) => {
-            console.log(entry.description, moment(entry.start).toLocaleString());
-          });
-        }
-      }
-
       return res;
-    });
 
-    effect(() => console.log('comp', this.comp()));
+    });
 
     this.elapsed$ = interval(100).pipe(
       map(() => {
@@ -67,6 +50,12 @@ export class TrackerComponent {
         return '';
       }),
     );
+
+  }
+
+  getObjectKeys(obj: {}) {
+
+    return Object.keys(obj);
 
   }
 

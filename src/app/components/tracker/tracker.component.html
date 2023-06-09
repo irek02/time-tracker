@@ -14,7 +14,6 @@
         [projects]="dataService.projects()"
         (projectSelected)="dataService.updateCurrentEntry({ project_id: $event })"
         (projectCreated)="dataService.addProject($event)"
-        (projectDeleted)="dataService.deleteProject($event)"
       ></app-project-selector>
     </div>
     <div class="col-1">{{ (elapsed$ | async) || '00:00:00' }}</div>
@@ -34,65 +33,71 @@
     </div>
   </div>
 </div>
-<div class="card my-3">
-  <div class="card-body">
-    <div class="card-title">Today</div>
+<div *ngFor="let week of getObjectKeys(groupedEntries())" class="mt-5">
+  <span class="fs-5">{{ week }}</span>
+  <div *ngFor="let day of getObjectKeys(groupedEntries()[week])">
+    <div class="card my-3">
+      <div class="card-header">
+        {{ day }}
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+          <li *ngFor="let entry of groupedEntries()[week][day]" class="list-group-item d-flex justify-content-between align-items-center p-2 m-1 gap-3">
+            <div style="max-width: 50%;">
+              <input
+                class="form-control"
+                [value]="entry.description || ''"
+                (focusout)="dataService.updateEntry(entry.id, { description: $any($event.target).value })">
+            </div>
+            <div class="flex-grow-1">
+              <app-project-selector
+                [entry]="entry"
+                [projects]="dataService.projects()"
+                (projectSelected)="dataService.updateEntry(entry.id, { project_id: $event })"
+                (projectCreated)="dataService.addProject($event)"
+              ></app-project-selector>
+            </div>
+            <div>
+              <input
+                #inputStart
+                [value]="getTimeString(entry.start)"
+                (focusout)="dataService.updateEntry(entry.id, { start: parseIrek(inputStart.value, entry.start) })"
+                class="form-control d-inline"
+                style="width: 120px">
+              -
+              <input
+                #inputStop
+                [value]="getTimeString(entry.stop)"
+                class="form-control d-inline"
+                (focusout)="dataService.updateEntry(entry.id, { stop: parseIrek(inputStop.value, entry.stop) })"
+                style="width: 120px">
+            </div>
+            <div>
+              {{ getDuration(entry.start, entry.stop) }}
+            </div>
+            <div>
+              <input matInput [matDatepicker]="picker" (dateInput)="updateEntryDate($event, entry)" class="visually-hidden">
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker [startAt]="getDate(entry.start)"></mat-datepicker>
+            </div>
+            <div>
+              <button class="btn btn-secondary btn-sm" (click)="trackAgain(entry)">
+                <i class="bi-play"></i>
+              </button>
+            </div>
+            <div>
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown">
+                  <i class="bi-three-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><button type="button" class="dropdown-item" (click)="dataService.deleteEntry(entry.id)">Delete</button></li>
+                </ul>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
-  <ul class="list-group list-group-flush">
-    <li *ngFor="let entry of dataService.entries(); let i = index" class="list-group-item d-flex justify-content-between align-items-center p-2 m-1 gap-3">
-      <div style="max-width: 50%;">
-        <input
-          class="form-control"
-          [value]="entry.description || ''"
-          (focusout)="dataService.updateEntry(entry.id, { description: $any($event.target).value })">
-      </div>
-      <div class="flex-grow-1">
-        <app-project-selector
-          [entry]="entry"
-          [projects]="dataService.projects()"
-          (projectSelected)="dataService.updateEntry(entry.id, { project_id: $event })"
-          (projectCreated)="dataService.addProject($event)"
-          (projectDeleted)="dataService.deleteProject($event)"
-        ></app-project-selector>
-      </div>
-      <div>
-        <input
-          #inputStart
-          [value]="getTimeString(entry.start)"
-          (focusout)="dataService.updateEntry(entry.id, { start: parseIrek(inputStart.value, entry.start) })"
-          class="form-control d-inline"
-          style="width: 120px">
-        -
-        <input
-          #inputStop
-          [value]="getTimeString(entry.stop)"
-          class="form-control d-inline"
-          (focusout)="dataService.updateEntry(entry.id, { stop: parseIrek(inputStop.value, entry.stop) })"
-          style="width: 120px">
-      </div>
-      <div>
-        {{ getDuration(entry.start, entry.stop) }}
-      </div>
-      <div>
-        <input matInput [matDatepicker]="picker" (dateInput)="updateEntryDate($event, entry)" class="visually-hidden">
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker [startAt]="getDate(entry.start)"></mat-datepicker>
-      </div>
-      <div>
-        <button class="btn btn-secondary btn-sm" (click)="trackAgain(entry)">
-          <i class="bi-play"></i>
-        </button>
-      </div>
-      <div>
-        <div class="dropdown">
-          <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown">
-            <i class="bi-three-dots-vertical"></i>
-          </button>
-          <ul class="dropdown-menu">
-            <li><button type="button" class="dropdown-item" (click)="dataService.deleteEntry(entry.id)">Delete</button></li>
-          </ul>
-        </div>
-      </div>
-    </li>
-  </ul>
 </div>
