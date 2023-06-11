@@ -1,6 +1,7 @@
 import { Component, OnInit, Signal, computed } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
-import { DataService } from 'src/app/services/data.service';
+import { DataService  } from 'src/app/services/data.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-reports',
@@ -13,13 +14,6 @@ export class ReportsComponent implements OnInit {
   barChartPlugins = [];
 
   barChartData: Signal<ChartConfiguration<'bar'>['data']>;
-  // public barChartData: ChartConfiguration<'bar'>['data'] = {
-  //   labels: [ '2006', '2007', '2008', '2009', '2010', '2011', '2012' ],
-  //   datasets: [
-  //     { data: [ 65, 59, 80, 81, 56, 55, 40 ], label: 'Series A' },
-  //     { data: [ 28, 48, 40, 19, 86, 27, 90 ], label: 'Series B' }
-  //   ]
-  // };
 
   barChartOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: false,
@@ -38,24 +32,39 @@ export class ReportsComponent implements OnInit {
   ) {
     this.barChartData = computed(() => {
 
-      const res: any = {};
+      const foo = this.dataService.entries().map(entry => ({
+        date: moment(entry.start).format('MMM D'),
+        duration: Math.ceil((entry.stop - entry.start) / 1000 / 60),
+        project: entry.project?.name || 'no-project',
+      }));
 
-      this.dataService.entries().forEach(entry => {
-        const proj = entry.project?.name || 'no-project';
-        if (!res[proj]) {
-          res[proj] = [];
+      const entriesByProject: { [key: string]: { date: string; duration: number; project: string; }[] } = {};
+      foo.forEach(entry => {
+        if (!entriesByProject[entry.project]) {
+          entriesByProject[entry.project] = [];
         }
-        res[proj].push(Math.ceil((entry.stop - entry.start) / 1000 / 60));
+        entriesByProject[entry.project].push(entry);
       });
 
-      console.log(res);
+      const dates = Array.from(new Set(foo.map(entry => entry.date)));
+      const datasets = [];
+      for (let project in entriesByProject) {
+        const dataset: any = {
+          data: [],
+          label: project,
+        };
+
+        for (let date of dates) {
+          const entriesByDate = entriesByProject[project].filter(entry => entry.date === date);
+          const duration = entriesByDate.reduce((acc, entry) => acc + entry.duration, 0);
+          dataset.data.push(duration);
+        }
+        datasets.push(dataset);
+      }
 
       return {
-        labels: [ '2006', '2007', '2008', '2009', '2010', '2011', '2012' ],
-        datasets: [
-          { data: [ 65, 59, 80, 81, 56, 55, 40 ], label: 'Series A' },
-          { data: [ 28, 48, 40, 19, 86, 27, 90 ], label: 'Series B' }
-        ]
+        labels: dates,
+        datasets,
       };
 
     });
