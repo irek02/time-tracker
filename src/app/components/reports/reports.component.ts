@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { DataService } from 'src/app/services/data.service';
 import * as moment from 'moment';
+import * as dayjs from 'dayjs'
 
 interface Entry {
   date: string;
@@ -15,9 +16,18 @@ interface Entry {
   styleUrls: ['./reports.component.scss']
 })
 export class ReportsComponent implements OnInit {
+
+  ranges: any = {
+    'Today': [dayjs(), dayjs()],
+    'Yesterday': [dayjs().subtract(1, 'days'), dayjs().subtract(1, 'days')],
+    'Last 7 Days': [dayjs().subtract(6, 'days'), dayjs()],
+    'Last 30 Days': [dayjs().subtract(29, 'days'), dayjs()],
+    'This Month': [dayjs().startOf('month'), dayjs().endOf('month')],
+    'Last Month': [dayjs().subtract(1, 'month').startOf('month'), dayjs().subtract(1, 'month').endOf('month')]
+  }
+
   barChartLegend = true;
   barChartData!: ChartConfiguration<'bar'>['data'];
-
   barChartOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: false,
     scales: {
@@ -31,6 +41,10 @@ export class ReportsComponent implements OnInit {
   };
 
   constructor(private dataService: DataService) {}
+
+  foo(e: {startDate: dayjs.Dayjs, endDate: dayjs.Dayjs }) {
+    console.log(e);
+  }
 
   ngOnInit() {
 

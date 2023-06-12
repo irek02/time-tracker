@@ -1,3 +1,10 @@
+<input
+  type="text"
+  ngxDaterangepickerMd
+  [ranges]="ranges"
+  (change)="foo($any($event))"
+  class="form-control"/>
+
 <canvas baseChart
   [data]="barChartData"
   [options]="barChartOptions"
