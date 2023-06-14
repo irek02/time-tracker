@@ -1,12 +1,20 @@
-<input
-  type="text"
-  ngxDaterangepickerMd
-  [ranges]="ranges"
-  (change)="foo($any($event))"
-  class="form-control"/>
+<div class="mb-5">
+  <input
+    type="text"
+    ngxDaterangepickerMd
+    [showCustomRangeLabel]="true"
+    [showRangeLabelOnInput]="true"
+    [alwaysShowCalendars]="true"
+    [linkedCalendars]="true"
+    [ngModel]="selectedDates()"
+    [ranges]="ranges"
+    (change)="onCalendarChange($any($event))"
+    class="form-control ms-auto"
+    style="width: 250px;"/>
+</div>
 
 <canvas baseChart
-  [data]="barChartData"
+  [data]="barChartData()"
   [options]="barChartOptions"
   [legend]="barChartLegend"
   [type]="'bar'"
