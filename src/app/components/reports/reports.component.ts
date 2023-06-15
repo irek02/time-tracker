@@ -1,7 +1,6 @@
 import { Component, OnInit, Signal, computed, signal } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { DataService, Entry } from 'src/app/services/data.service';
-import * as moment from 'moment';
 import * as dayjs from 'dayjs'
 
 @Component({
@@ -59,13 +58,13 @@ export class ReportsComponent implements OnInit {
   }
 
   private generateChartData(entries: Entry[]): ChartConfiguration<'bar'>['data'] {
-    const newEntries: { date: string, duration: number, project: string }[] = entries.map(entry => ({
-      date: moment(entry.start).format('MMM D'),
-      duration: Math.ceil((entry.stop - entry.start) / 1000 / 60 / 60),
+    const newEntries: { date: string, duration: string, project: string }[] = entries.map(entry => ({
+      date: dayjs(entry.start).format('MMM D'),
+      duration: ((entry.stop - entry.start) / 1000 / 60 / 60).toFixed(2),
       project: entry.project?.name || 'no-project',
     }));
 
-    const entriesByProject: { [key: string]: { date: string, duration: number, project: string }[] } = {};
+    const entriesByProject: { [key: string]: { date: string, duration: string, project: string }[] } = {};
     newEntries.forEach(entry => {
       if (!entriesByProject[entry.project]) {
         entriesByProject[entry.project] = [];
@@ -84,7 +83,7 @@ export class ReportsComponent implements OnInit {
 
       for (let date of dates) {
         const entriesByDate = entriesByProject[project].filter(entry => entry.date === date);
-        const duration = entriesByDate.reduce((acc, entry) => acc + entry.duration, 0);
+        const duration = entriesByDate.reduce((acc, entry) => acc + parseFloat(entry.duration), 0);
         dataset.data.push(duration);
       }
       datasets.push(dataset);
